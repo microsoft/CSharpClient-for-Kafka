@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A92DD03B-EE4F-4A78-9FB2-279B6348C7D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kafka.Client</RootNamespace>
+    <AssemblyName>KafkaNET.Library</AssemblyName>
+    <AssemblyClsCompliant>false</AssemblyClsCompliant>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\KafkaNET.Library.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\KafkaNET.Library.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Integration|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Integration|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <DefineConstants>TRACE;NET45</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="ZooKeeperNet, Version=3.4.6.1, Culture=neutral, PublicKeyToken=fefd2c046da35b56, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZooKeeper.Net.3.4.6.2\lib\net40\ZooKeeperNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Cfg\BrokerConfiguration.cs" />
+    <Compile Include="Cfg\BrokerConfigurationElement.cs" />
+    <Compile Include="Cfg\BrokerConfigurationElementCollection.cs" />
+    <Compile Include="Cfg\ConsumerConfiguration.cs" />
+    <Compile Include="Cfg\ConsumerConfigurationSection.cs" />
+    <Compile Include="Cfg\ISyncProducerConfigShared.cs" />
+    <Compile Include="Cfg\KafkaSimpleManagerConfiguration.cs" />
+    <Compile Include="Cfg\ProducerConfiguration.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ChildChangedEventItem.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\DataChangedEventItem.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperChildChangedEventArgs.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperDataChangedEventArgs.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperEventArgs.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperEventTypes.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperSessionCreatedEventArgs.cs" />
+    <Compile Include="ZooKeeperIntegration\Events\ZooKeeperStateChangedEventArgs.cs" />
+    <Compile Include="ZooKeeperIntegration\IZooKeeperClient.cs" />
+    <Compile Include="ZooKeeperIntegration\IZooKeeperConnection.cs" />
+    <Compile Include="ZooKeeperIntegration\IZooKeeperSerializer.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\BrokerTopicsListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\IZooKeeperChildListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\IZooKeeperDataListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\IZooKeeperStateListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\ZkPartitionLeaderListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\ZKRebalancerListener.cs" />
+    <Compile Include="ZooKeeperIntegration\Listeners\ZKSessionExpireListener.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperClient.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperClient.Watcher.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperConnection.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperStringSerializer.cs" />
+    <Compile Include="Cfg\ZooKeeperConfigurationElement.cs" />
+    <Compile Include="Cfg\ZooKeeperServerConfigurationElement.cs" />
+    <Compile Include="Cfg\ZooKeeperServerConfigurationElementCollection.cs" />
+    <Compile Include="Cluster\Cluster.cs" />
+    <Compile Include="Cluster\Partition.cs" />
+    <Compile Include="Cluster\Replica.cs" />
+    <Compile Include="Cluster\ZKBrokerInfo.cs" />
+    <Compile Include="Consumers\Consumer.cs" />
+    <Compile Include="Consumers\ConsumerGroupStatisticsRecord.cs" />
+    <Compile Include="Consumers\ConsumerIterator.cs" />
+    <Compile Include="Consumers\ConsumerIteratorState.cs" />
+    <Compile Include="Consumers\FetchedDataChunk.cs" />
+    <Compile Include="Consumers\Fetcher.cs" />
+    <Compile Include="Consumers\FetcherRunnable.cs" />
+    <Compile Include="Consumers\IConsumer.cs" />
+    <Compile Include="Consumers\IConsumerConnector.cs" />
+    <Compile Include="Consumers\KafkaMessageStream.cs" />
+    <Compile Include="Consumers\OffsetResponse.cs" />
+    <Compile Include="Consumers\PartitionFetchInfo.cs" />
+    <Compile Include="Consumers\PartitionLeaderFinder.cs" />
+    <Compile Include="Consumers\PartitionStatisticsRecord.cs" />
+    <Compile Include="Consumers\PartitionTopicInfo.cs" />
+    <Compile Include="Consumers\TopicCount.cs" />
+    <Compile Include="Consumers\TopicStatisticsRecord.cs" />
+    <Compile Include="Consumers\ZookeeperConsumerConnector.cs" />
+    <Compile Include="Examples\AdHocTestCases\TestHelper.cs" />
+    <Compile Include="Examples\AdHocTestCases\TestHelperOptions.cs" />
+    <Compile Include="Examples\Arguments\KafkaNETExampleCommandVerb.cs" />
+    <Compile Include="Examples\Arguments\KafkaNETExampleConstants.cs" />
+    <Compile Include="Examples\Arguments\KafkaNETExampleSubArguments.cs" />
+    <Compile Include="Examples\Arguments\KafkaNETExampleType.cs" />
+    <Compile Include="Examples\ConsumeGroupMonitor\ConsumeGroupMonitorHelper.cs" />
+    <Compile Include="Examples\ConsumeGroupMonitor\ConsumeGroupMonitorHelperOptions.cs" />
+    <Compile Include="Examples\ConsumeGroup\ConsumeGroupHelperOptions.cs" />
+    <Compile Include="Examples\ConsumeGroup\ConsumerGroupHelper.cs" />
+    <Compile Include="Examples\ConsumeSimple\ConsumeSimpleHelper.cs" />
+    <Compile Include="Examples\ConsumeSimple\ConsumeSimpleHelperOptions.cs" />
+    <Compile Include="Examples\KafkaNetLibraryExample.cs" />
+    <Compile Include="Examples\ProduceJavaEventServer\JavaEventServerPerfTestHelper.cs" />
+    <Compile Include="Examples\ProduceJavaEventServer\JavaEventServerPerfTestHelperOptions.cs" />
+    <Compile Include="Examples\ProduceMonitor\ProduceMonitorHelper.cs" />
+    <Compile Include="Examples\ProduceMonitor\ProduceMonitorHelperOptions.cs" />
+    <Compile Include="Examples\ProducePerfTest\PerfTestHelperBase.cs" />
+    <Compile Include="Examples\ProducePerfTest\PerfTestThreadParameter.cs" />
+    <Compile Include="Examples\ProducePerfTest\ProducePerfTestHelper.cs" />
+    <Compile Include="Examples\ProducePerfTest\ProducePerfTestHelperOptions.cs" />
+    <Compile Include="Examples\ProducePerfTest\ProducePerfTestKafkaSimpleManagerWrapper.cs" />
+    <Compile Include="Examples\ProduceSimple\ProduceSimpleHelper.cs" />
+    <Compile Include="Examples\ProduceSimple\ProduceSimpleHelperOptions.cs" />
+    <Compile Include="Examples\Topic\OffsetHelper.cs" />
+    <Compile Include="Examples\Topic\TopicHelper.cs" />
+    <Compile Include="Examples\Topic\TopicHelperArguments.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="Exceptions\BadMessageSizeFromKafkaException.cs" />
+    <Compile Include="Exceptions\BrokerNotAvailableException.cs" />
+    <Compile Include="Exceptions\ConsumerTimeoutException.cs" />
+    <Compile Include="Exceptions\IllegalQueueStateException.cs" />
+    <Compile Include="Exceptions\IllegalStateException.cs" />
+    <Compile Include="Exceptions\InvalidBrokerIdException.cs" />
+    <Compile Include="Exceptions\InvalidMessageSizeException.cs" />
+    <Compile Include="Exceptions\InvalidPartitionException.cs" />
+    <Compile Include="Exceptions\KafkaClientException.cs" />
+    <Compile Include="Exceptions\KafkaConsumeException.cs" />
+    <Compile Include="Exceptions\MessageSizeTooLargeException.cs" />
+    <Compile Include="Exceptions\NoBrokerForTopicException.cs" />
+    <Compile Include="Exceptions\NoBrokersForPartitionException.cs" />
+    <Compile Include="Exceptions\NoLeaderForPartitionException.cs" />
+    <Compile Include="Exceptions\NoLoaderForPartitionException.cs" />
+    <Compile Include="Exceptions\NoPartitionsForTopicException.cs" />
+    <Compile Include="Exceptions\NoSuchElementException.cs" />
+    <Compile Include="Exceptions\OffsetIsUnknowException.cs" />
+    <Compile Include="Exceptions\TimeStampTooSmallException.cs" />
+    <Compile Include="Exceptions\UnableToConnectToHostException.cs" />
+    <Compile Include="Exceptions\UnavailableProducerException.cs" />
+    <Compile Include="Exceptions\UnknownCodecException.cs" />
+    <Compile Include="Exceptions\ZKRebalancerException.cs" />
+    <Compile Include="Exceptions\ZooKeeperException.cs" />
+    <Compile Include="Exceptions\ZooKeeperTimeoutException.cs" />
+    <Compile Include="Helper\KafkaClientHelperUtils.cs" />
+    <Compile Include="Helper\KafkaOffsetType.cs" />
+    <Compile Include="Helper\KafkaSimpleManager.cs" />
+    <Compile Include="IKafkaConnection.cs" />
+    <Compile Include="KafkaConnection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\KafkaException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KafkaStopWatch.cs" />
+    <Compile Include="Messages\BoundedBuffer.cs" />
+    <Compile Include="Messages\CompressionCodec.cs" />
+    <Compile Include="Messages\CompressionCodecs.cs" />
+    <Compile Include="Messages\CompressionUtils.cs" />
+    <Compile Include="Messages\Compression\BitArrayManipulation.cs" />
+    <Compile Include="Messages\Compression\ByteBuffer.cs" />
+    <Compile Include="Messages\Compression\SnappyCompress.cs" />
+    <Compile Include="Messages\Compression\SnappyDecompress.cs" />
+    <Compile Include="Messages\Compression\SnappyHelper.cs" />
+    <Compile Include="Messages\MessageAndOffset.cs" />
+    <Compile Include="Producers\DefaultCallbackHandler.cs" />
+    <Compile Include="Producers\ICallbackHandler.cs" />
+    <Compile Include="Producers\PartitionData.cs" />
+    <Compile Include="Producers\Partitioning\BrokerPartitionInfo.cs" />
+    <Compile Include="Producers\Partitioning\DefaultStringPartitioner.cs" />
+    <Compile Include="Producers\Partitioning\ModPartitioner.cs" />
+    <Compile Include="Producers\Partitioning\ModPartitionerForObjectKeyType.cs" />
+    <Compile Include="Producers\PartitionMetadata.cs" />
+    <Compile Include="Producers\ProduceDispatchSeralizeResult.cs" />
+    <Compile Include="Producers\Producer.StrMsg.cs" />
+    <Compile Include="Producers\ProducerSendResult.cs" />
+    <Compile Include="Producers\Sync\ISyncProducerPool.cs" />
+    <Compile Include="Producers\Sync\SyncProducerPool.cs" />
+    <Compile Include="Producers\TopicData.cs" />
+    <Compile Include="Producers\TopicMetadata.cs" />
+    <Compile Include="RequestContext.cs" />
+    <Compile Include="Requests\FetchRequestBuilder.cs" />
+    <Compile Include="Requests\TopicMetadataRequest.cs" />
+    <Compile Include="Responses\FetchResponse.cs" />
+    <Compile Include="Responses\FetchResponseWrapper.cs" />
+    <Compile Include="Responses\IResponseParser.cs" />
+    <Compile Include="Responses\ProducerResponse.cs" />
+    <Compile Include="Responses\TopicAndPartition.cs" />
+    <Compile Include="Serialization\DefaultDecoder.cs" />
+    <Compile Include="Serialization\IDecoder.cs" />
+    <Compile Include="Serialization\StringDecoder.cs" />
+    <Compile Include="Serialization\StringEncoder.cs" />
+    <Compile Include="Serialization\IWritable.cs" />
+    <Compile Include="Cfg\SyncProducerConfiguration.cs" />
+    <Compile Include="Cfg\ZooKeeperConfiguration.cs" />
+    <Compile Include="Cluster\Broker.cs" />
+    <Compile Include="Producers\Partitioning\DefaultPartitioner.cs" />
+    <Compile Include="KafkaClientBase.cs" />
+    <Compile Include="Serialization\DefaultEncoder.cs" />
+    <Compile Include="Serialization\KafkaBinaryReader.cs" />
+    <Compile Include="Serialization\KafkaBinaryWriter.cs" />
+    <Compile Include="Utils\ClusterHealthChecker.cs" />
+    <Compile Include="Utils\ConsumerOffsetChecker.cs" />
+    <Compile Include="Utils\ConsumerUtils.cs" />
+    <Compile Include="Utils\ErrorMapping.cs" />
+    <Compile Include="Utils\ExceptionFormatter.cs" />
+    <Compile Include="Utils\ExceptionUtil.cs" />
+    <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\Guard.cs" />
+    <Compile Include="Utils\KafkaConsoleUtil.cs" />
+    <Compile Include="Utils\KafkaScheduler.cs" />
+    <Compile Include="Utils\ThreadSafeRandom.cs" />
+    <Compile Include="Utils\ZKGroupDirs.cs" />
+    <Compile Include="Utils\ZKGroupTopicDirs.cs" />
+    <Compile Include="Utils\ZkUtils.cs" />
+    <Compile Include="Messages\MessageSet.cs" />
+    <Compile Include="Messages\BufferedMessageSet.cs" />
+    <Compile Include="Producers\Partitioning\IBrokerPartitionInfo.cs" />
+    <Compile Include="Producers\Partitioning\IPartitioner.cs" />
+    <Compile Include="Producers\IProducer.cs" />
+    <Compile Include="Producers\Sync\ISyncProducer.cs" />
+    <Compile Include="Producers\ProducerPoolData.cs" />
+    <Compile Include="Producers\Sync\SyncProducer.cs" />
+    <Compile Include="Requests\AbstractRequest.cs" />
+    <Compile Include="Messages\Message.cs" />
+    <Compile Include="Producers\ProducerData.cs" />
+    <Compile Include="Requests\FetchRequest.cs" />
+    <Compile Include="Requests\OffsetRequest.cs" />
+    <Compile Include="Requests\ProducerRequest.cs" />
+    <Compile Include="Serialization\IEncoder.cs" />
+    <Compile Include="Utils\Crc32Hasher.cs" />
+    <Compile Include="Producers\Producer.cs" />
+    <Compile Include="Requests\RequestTypes.cs" />
+    <Compile Include="Utils\BitWorks.cs" />
+    <Compile Include="Utils\ReflectionHelper.cs" />
+    <Compile Include="ZooKeeperAwareKafkaClientBase.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
