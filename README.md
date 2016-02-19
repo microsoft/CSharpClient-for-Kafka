@@ -3,9 +3,9 @@
 The project is a fork from ExactTarget's Kafka-net Client, tuned to serve Microsoft's Big Data needs. At Microsoft we run Kafka on multiple Windows Clusters with JBOD machines.
 
 ## Related documentation
-[Kafka documentation](https://kafka.apache.org/documentation.html)
-[Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
-[Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
+*[Kafka documentation](https://kafka.apache.org/documentation.html)
+*[Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
+*[Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
 
 ## Build Kafkanet
 * Clone Kafkanet through ```git clone https://github.com/Microsoft/ChakraCore.git```
@@ -18,6 +18,7 @@ The project is a fork from ExactTarget's Kafka-net Client, tuned to serve Micros
 
 ## Using Console
 * Setup local Kafka and Zookeeper
+
 ### Console Options
 		topic                           Dump topics metadata, such as: earliest/latest offset, replica, ISR.
         consumesimple                   Consume data in single thread.
@@ -28,10 +29,14 @@ The project is a fork from ExactTarget's Kafka-net Client, tuned to serve Micros
         eventserverperftest             Http Post data to event server in multiple thread.
         producemonitor                  Monitor latest offset.
         test                            Run some adhoc test cases.
+		
 ## Using the library
+
 ### Producer
+
 The Producer can send one message or an entire batch to Kafka. When sending a batch you can send to multiple topics at once
 #### Producer Usage
+
 			var brokerConfig = new BrokerConfiguration()
             {
                 BrokerId = this.brokerId,
@@ -44,9 +49,11 @@ The Producer can send one message or an entire batch to Kafka. When sending a ba
 			var batch=ConstructBatch();
 			kafkaProducer.Send(batch);
 ### Simple Consumer
+
 The simple Consumer allows full control for retrieving data. You could instantiate a Consumer directly by providing a ConsumerConfiguration and then calling Fetch.
 Kafkanet has a higher level wrapper around Consumer which allows consumer reuse and other benefits
 #### Consumer Usage
+
 				// create the Consumer higher level manager
 				var managerConfig = new KafkaSimpleManagerConfiguration()
                 {
@@ -61,8 +68,10 @@ Kafkanet has a higher level wrapper around Consumer which allows consumer reuse 
 				m_consumerManager.RefreshMetadata(0, m_consumerId, 0, m_topic, true);
                 var partitionConsumer = m_consumerManager.GetConsumer(m_topic, partitionId);
 ### Balanced Consumer
+
 The balanced consumer manages partition assignment for each instance in the same consumer group. Rebalance are triggered by zookeeper changes.
 #### Balanced Consumer Usage
+
 			// Here we create a balanced consumer on one consumer machine for consumerGroupId. All machines consuming for this group will get balanced together
 			ConsumerConfiguration config = new ConsumerConfiguration
             {
@@ -82,9 +91,9 @@ The balanced consumer manages partition assignment for each instance in the same
 			// start consuming stream
 			foreach (Message message in m_KafkaMessageStream.GetCancellable(cancellationTokenSource.Token))
 			....
+			
 ## Contribute
 
 Contributions to Kafkanet are welcome.  Here is how you can contribute to Kafkanet:
-
 * [Submit bugs](https://github.com/Microsoft/Kafkanet/issues) and help us verify fixes
 * [Submit pull requests](https://github.com/Microsoft/Kafkanet/pulls) for bug fixes and features and discuss existing proposals
