@@ -152,11 +152,8 @@ namespace Kafka.Client.Consumers
                         {
                             if (partition.Value.ConsumeOffsetValid)
                             {
-                                //Som: save offsets unconditionally. Kafka's latestOffset for a particular topic-partition can go backward
-                                //if a follwer which is not fully caught up becomes a leader. We still need to save the conumed offsets even then.
-
-                                //if (newOffset > partition.Value.CommitedOffset)
-                                //{
+                                // Save offsets unconditionally. Kafka's latestOffset for a particular topic-partition can go backward
+                                // if a follwer which is not fully caught up becomes a leader. We still need to save the conumed offsets even then.
                                 try
                                 {
                                     ZkUtils.UpdatePersistentPath(GetZkClient(),
@@ -168,8 +165,6 @@ namespace Kafka.Client.Consumers
                                 {
                                     Logger.ErrorFormat("error in CommitOffsets UpdatePersistentPath : {0}", ex.FormatException());
                                 }
-
-                                //}
                             }
                             else
                             {
