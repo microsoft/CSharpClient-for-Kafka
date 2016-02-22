@@ -4,9 +4,9 @@ The project is a fork from ExactTarget's Kafka-net Client, tuned to serve Micros
 The client works with Kafka 0.8.1.
 
 ## Related documentation
-*[Kafka documentation](https://kafka.apache.org/documentation.html)
-*[Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
-*[Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
+* [Kafka documentation](https://kafka.apache.org/documentation.html)
+* [Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
+* [Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
 
 ## Build Kafkanet
 * Clone Kafkanet through ```git clone https://github.com/Microsoft/ChakraCore.git```
