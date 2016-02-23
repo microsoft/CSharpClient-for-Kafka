@@ -2,7 +2,11 @@ GET INVOLVED
 =============
 We invite you to become part of this project, regardless of your skill set or available time.
 
-More details to come.
+Contribute
+----------
+Contributions to Kafkanet are welcome.  Here is how you can contribute to Kafkanet:
+* [Submit bugs](https://github.com/Microsoft/Kafkanet/issues) and help us verify fixes
+* [Submit pull requests](https://github.com/Microsoft/Kafkanet/pulls) for bug fixes and features and discuss existing proposals
 
 Contribution License Agreement
 ------------------------------
