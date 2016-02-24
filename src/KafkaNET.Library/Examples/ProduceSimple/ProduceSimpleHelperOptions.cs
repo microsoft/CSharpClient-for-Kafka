@@ -96,7 +96,7 @@ namespace KafkaNET.Library.Examples
                 sb.AppendFormat("\t-c BatchCount           Optional, BatchCount to write,  default -1 means always write.\r\n");
                 sb.AppendFormat("\t-b MessageCountPerBatch Optional, MessageCountPerBatch, default {0}.\r\n", KafkaNETExampleConstants.DefaultMessageCountPerBatch);
                 sb.AppendFormat("\t-m MessageSize          Optional, message size, default :{0}\r\n", KafkaNETExampleConstants.DefaultMessageSize);
-                sb.AppendFormat("\t-r Compression          Optional, Compression mode, defulat 0, no Compression.   1 for GZIP, 2 for SNAPPY\r\n");
+                sb.AppendFormat("\t-r Compression          Optional, Compression mode, default 0, no Compression.   1 for GZIP, 2 for SNAPPY\r\n");
                 sb.AppendFormat("\t-a RequiredAcks         Optional, RequiredAcks, default :{0}.\r\n", KafkaNETExampleConstants.DefaultRequiredAcks);
                 sb.AppendFormat("\t-k AckTimeout           Optional, AckTimeout, default :{0}.\r\n", SyncProducerConfiguration.DefaultAckTimeout);
                 sb.AppendFormat("\t-s SendTimeout          Optional, SendTimeout, default :{0}.\r\n", SyncProducerConfiguration.DefaultSendTimeout);
