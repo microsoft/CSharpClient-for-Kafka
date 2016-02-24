@@ -11,7 +11,7 @@ The client works with Kafka 0.8.1.
 * [Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
 
 ## Build Kafkanet
-* Clone Kafkanet through ```git clone https://github.com/Microsoft/ChakraCore.git```
+* Clone Kafkanet through ```git clone https://github.com/Microsoft/Kafkanet.git```
 * Open `src\KafkaNETLibraryAndConsole.sln` in Visual Studio
 * Build Solution
 
