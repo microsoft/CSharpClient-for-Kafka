@@ -1,1 +1,0 @@
-C:\Users\raiamand\Source\Repos\Kafkanet\src\KafkaNETLibraryConsole\bin\Debug\KafkaNETLibraryConsole.exe.config
