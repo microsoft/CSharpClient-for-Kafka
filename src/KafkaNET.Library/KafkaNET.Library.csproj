@@ -363,5 +363,8 @@
     <Compile Include="Utils\ReflectionHelper.cs" />
     <Compile Include="ZooKeeperAwareKafkaClientBase.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
