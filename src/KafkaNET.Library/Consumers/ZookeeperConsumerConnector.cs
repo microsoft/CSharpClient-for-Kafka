@@ -154,16 +154,21 @@ namespace Kafka.Client.Consumers
                             {
                                 // Save offsets unconditionally. Kafka's latestOffset for a particular topic-partition can go backward
                                 // if a follwer which is not fully caught up becomes a leader. We still need to save the conumed offsets even then.
-                                try
+                                //skip only if we are trying to commit the same offset
+
+                                if (newOffset != partition.Value.CommitedOffset)
                                 {
-                                    ZkUtils.UpdatePersistentPath(GetZkClient(),
-                                                                    topicDirs.ConsumerOffsetDir + "/" +
-                                                                    partition.Value.PartitionId, newOffset.ToString());
-                                    partition.Value.CommitedOffset = newOffset;
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logger.ErrorFormat("error in CommitOffsets UpdatePersistentPath : {0}", ex.FormatException());
+                                    try
+                                    {
+                                        ZkUtils.UpdatePersistentPath(GetZkClient(),
+                                                                        topicDirs.ConsumerOffsetDir + "/" +
+                                                                        partition.Value.PartitionId, newOffset.ToString());
+                                        partition.Value.CommitedOffset = newOffset;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.ErrorFormat("error in CommitOffsets UpdatePersistentPath : {0}", ex.FormatException());
+                                    }
                                 }
                             }
                             else

@@ -530,7 +530,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 leader,
                 partitionId,
                 queue,
-                offset,
+                offsetCommited,
                 offset,
                 offset,
                 this.config.FetchSize,
