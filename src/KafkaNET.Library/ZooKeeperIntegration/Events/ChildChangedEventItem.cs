@@ -105,7 +105,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         {
             get
             {
-                return this.childChanged != null ? this.childChanged.GetInvocationList().Count() : 0;
+                return this.childChanged != null ? this.childChanged.GetInvocationList().Length : 0;
             }
         }
     }
