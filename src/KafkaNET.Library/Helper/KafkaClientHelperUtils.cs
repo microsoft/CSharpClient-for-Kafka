@@ -67,7 +67,7 @@ namespace Kafka.Client.Consumers
             }
 
             string[] brokerParams = brokerAddr.Split(',');
-            if (brokerParams == null || brokerParams.Count() != 2)
+            if (brokerParams == null || brokerParams.Length != 2)
             {
                 return null;
             }
@@ -79,7 +79,7 @@ namespace Kafka.Client.Consumers
             }
 
             string[] hostParams = brokerParams[1].Split(':');
-            if (hostParams == null || hostParams.Count() != 2)
+            if (hostParams == null || hostParams.Length != 2)
             {
                 return null;
             }

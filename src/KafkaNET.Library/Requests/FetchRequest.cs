@@ -135,7 +135,7 @@ namespace Kafka.Client.Requests
             writer.Write(this.ReplicaId);
             writer.Write(this.MaxWait);
             writer.Write(this.MinBytes);
-            writer.Write(this.OffsetInfo.Count());
+            writer.Write(this.OffsetInfo.Count);
             foreach (var offsetInfo in this.OffsetInfo)
             {
                 writer.WriteShortString(offsetInfo.Key);
