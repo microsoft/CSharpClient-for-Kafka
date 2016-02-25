@@ -337,7 +337,7 @@ namespace Kafka.Client.Consumers
             this.EnsuresNotDisposed();
             if (this.GetZkClient() == null)
             {
-                throw new ArgumentNullException(string.Format("zkClient {1} has not been initialized!", this.config.ZooKeeper.ZkConnect));
+                throw new ArgumentNullException(string.Format("zkClient {0} has not been initialized!", this.config.ZooKeeper.ZkConnect));
             }
             var topicDirs = new ZKGroupTopicDirs(this.config.GroupId, topic);
             if (!GetZkClient().Exists(topicDirs.ConsumerOffsetDir))
