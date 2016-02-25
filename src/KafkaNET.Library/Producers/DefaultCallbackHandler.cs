@@ -106,7 +106,7 @@ namespace Kafka.Client.Producers
                         continue;
                     }
                     int allCount = events.Count();
-                    int remainFailedCount = outstandingProduceRequests.FailedProducerDatas.ToList().Count();
+                    int remainFailedCount = outstandingProduceRequests.FailedProducerDatas.ToList().Count;
                     string message = FailedToSendMessageException<TK>.BuildExceptionMessage(new List<Exception>() { e }, producerConfig.ProducerRetries, allCount, remainFailedCount, outstandingProduceRequests);
                     Logger.Error(message);
                     throw new FailedToSendMessageException<TK>(message, new List<Exception>() { e }, outstandingProduceRequests, allCount, remainFailedCount);
@@ -116,7 +116,7 @@ namespace Kafka.Client.Producers
             if (outstandingProduceRequests.HasDataNeedDispatch)
             {
                 int allCount = events.Count();
-                int remainFailedCount = outstandingProduceRequests.FailedProducerDatas.ToList().Count();
+                int remainFailedCount = outstandingProduceRequests.FailedProducerDatas.ToList().Count;
                 string message = FailedToSendMessageException<TK>.BuildExceptionMessage(new List<Exception>(), producerConfig.ProducerRetries, allCount, remainFailedCount, outstandingProduceRequests);
                 Logger.Error(message);
                 throw new FailedToSendMessageException<TK>(message, new List<Exception>(), outstandingProduceRequests, allCount, remainFailedCount);
@@ -251,12 +251,12 @@ namespace Kafka.Client.Producers
 
                     if (response != null)
                     {
-                        int statusCount = response.Statuses.Count();
+                        int statusCount = response.Statuses.Count;
                         //In java version
                         //https://git-wip-us.apache.org/repos/asf?p=kafka.git;a=blob;f=core/src/main/scala/kafka/producer/async/DefaultEventHandler.scala;h=821901e4f434dfd9eec6eceabfc2e1e65507a57c;hb=HEAD#l260
                         //The producerRequest.data just the messagesPerTopic.  So there compare the statusCount with producerRequest.data.size
                         //But in this C# version, the producerRequest.Data already grouped by topic.  So here need compare with messagesPerTopic.Count()
-                        int requestCount = messagesPerTopic.Count();
+                        int requestCount = messagesPerTopic.Count;
                         if (statusCount != requestCount)
                         {
                             StringBuilder sb = new StringBuilder();
@@ -319,7 +319,7 @@ namespace Kafka.Client.Producers
 
                     // when the total number of partitions is specified in the ProducerConf, do not check for the number of active partitions again,
                     // this ensures the partition selected per the pre-determined number of partitions, instead of actually number of partitions checked at run-time
-                    var totalNumPartitions = this.producerConfig.TotalNumPartitions == 0 ? topicPartitionsList.Count() : this.producerConfig.TotalNumPartitions;
+                    var totalNumPartitions = this.producerConfig.TotalNumPartitions == 0 ? topicPartitionsList.Count : this.producerConfig.TotalNumPartitions;
                     var partitionIndex = this.GetPartition(eventItem.Key, eventItem.IsKeyNull, totalNumPartitions);
 
                     // when the total number of partition is specified, this.GetPartitionListForTopic() returns only one partition corresponding to the partitionIndex
