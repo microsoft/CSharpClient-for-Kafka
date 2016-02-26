@@ -2,8 +2,7 @@
 
 [![Join the chat at https://gitter.im/Microsoft/Kafkanet](https://badges.gitter.im/Microsoft/Kafkanet.svg)](https://gitter.im/Microsoft/Kafkanet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 .Net implementation of the Apache Kafka Protocol that provides basic functionality through Producer/Consumer classes. The project also offers balanced consumer implementation. 
-The project is a fork from ExactTarget's Kafka-net Client, tuned to serve Microsoft's Big Data needs. At Microsoft we run Kafka on multiple Windows Clusters with JBOD machines.
-The client works with Kafka 0.8.1.
+The project is a fork from ExactTarget's Kafka-net Client.
 
 ## Related documentation
 * [Kafka documentation](https://kafka.apache.org/documentation.html)
