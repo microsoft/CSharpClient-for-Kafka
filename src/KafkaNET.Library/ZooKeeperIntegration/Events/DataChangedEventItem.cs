@@ -154,8 +154,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         {
             get
             {
-                return (this.dataChanged != null ? this.dataChanged.GetInvocationList().Count() : 0) +
-                    (this.dataDeleted != null ? this.dataDeleted.GetInvocationList().Count() : 0);
+                return (this.dataChanged != null ? this.dataChanged.GetInvocationList().Length : 0) +
+                    (this.dataDeleted != null ? this.dataDeleted.GetInvocationList().Length : 0);
             }
         }
     }
