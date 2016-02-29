@@ -39,61 +39,68 @@ The project is a fork from ExactTarget's Kafka-net Client.
 The Producer can send one message or an entire batch to Kafka. When sending a batch you can send to multiple topics at once
 #### Producer Usage
 
-			var brokerConfig = new BrokerConfiguration()
-            {
-                BrokerId = this.brokerId,
-                Host = this.kafkaServerName,
-                Port = this.kafkaPort
-            };
-            var config = new ProducerConfiguration(new List<BrokerConfiguration> { brokerConfig });
-            kafkaProducer = new Producer(config);
-			// here you construct you batch or single message object
-			var batch=ConstructBatch();
-			kafkaProducer.Send(batch);
+```c#
+var brokerConfig = new BrokerConfiguration()
+{
+    BrokerId = this.brokerId,
+    Host = this.kafkaServerName,
+    Port = this.kafkaPort
+};
+var config = new ProducerConfiguration(new List<BrokerConfiguration> { brokerConfig });
+kafkaProducer = new Producer(config);
+// here you construct you batch or single message object
+var batch=ConstructBatch();
+kafkaProducer.Send(batch);
+```
+
 ### Simple Consumer
 
 The simple Consumer allows full control for retrieving data. You could instantiate a Consumer directly by providing a ConsumerConfiguration and then calling Fetch.
 Kafkanet has a higher level wrapper around Consumer which allows consumer reuse and other benefits
 #### Consumer Usage
 
-				// create the Consumer higher level manager
-				var managerConfig = new KafkaSimpleManagerConfiguration()
-                {
-                    FetchSize = FetchSize,
-                    BufferSize = BufferSize,
-                    Zookeeper = m_zookeeper
-                };
-                m_consumerManager = new KafkaSimpleManager<int, Kafka.Client.Messages.Message>(managerConfig);
-				// get all available partitions for a topic through the manager
-				var allPartitions = m_consumerManager.GetTopicPartitionsFromZK(m_topic);
-				// Refresh metadata and grab a consumer for desired partitions
-				m_consumerManager.RefreshMetadata(0, m_consumerId, 0, m_topic, true);
-                var partitionConsumer = m_consumerManager.GetConsumer(m_topic, partitionId);
+```c#
+// create the Consumer higher level manager
+var managerConfig = new KafkaSimpleManagerConfiguration()
+{
+    FetchSize = FetchSize,
+    BufferSize = BufferSize,
+    Zookeeper = m_zookeeper
+};
+m_consumerManager = new KafkaSimpleManager<int, Kafka.Client.Messages.Message>(managerConfig);
+// get all available partitions for a topic through the manager
+var allPartitions = m_consumerManager.GetTopicPartitionsFromZK(m_topic);
+// Refresh metadata and grab a consumer for desired partitions
+m_consumerManager.RefreshMetadata(0, m_consumerId, 0, m_topic, true);
+var partitionConsumer = m_consumerManager.GetConsumer(m_topic, partitionId);
+```
 ### Balanced Consumer
 
 The balanced consumer manages partition assignment for each instance in the same consumer group. Rebalance are triggered by zookeeper changes.
 #### Balanced Consumer Usage
 
-			// Here we create a balanced consumer on one consumer machine for consumerGroupId. All machines consuming for this group will get balanced together
-			ConsumerConfiguration config = new ConsumerConfiguration
-            {
-                AutoCommit = false,
-                GroupId = consumerGroupId
-                ConsumerId = uniqueConsumerId
-                MaxFetchBufferLength = m_BufferMaxNoOfMessages,
-                FetchSize = fetchSize,
-                AutoOffsetReset = OffsetRequest.LargestTime,
-                NumberOfTries = 20,
-                ZooKeeper = new ZooKeeperConfiguration(zookeeperString, 30000, 30000, 2000)
-            };
-            var balancedConsumer = new ZookeeperConsumerConnector(config, true, m_ConsumerRebalanceHandler, m_ZKDisconnectHandler, m_ZKExpireHandler);
-			// grab streams for desired topics 
-			var streams = m_ZooKeeperConsumerConnector.CreateMessageStreams(m_TopicMap, new DefaultDecoder());
-            var KafkaMessageStream = streams[m_Topic][0];
-			// start consuming stream
-			foreach (Message message in m_KafkaMessageStream.GetCancellable(cancellationTokenSource.Token))
-			....
-			
+```c#
+// Here we create a balanced consumer on one consumer machine for consumerGroupId. All machines consuming for this group will get balanced together
+ConsumerConfiguration config = new ConsumerConfiguration
+{
+    AutoCommit = false,
+    GroupId = consumerGroupId
+    ConsumerId = uniqueConsumerId
+    MaxFetchBufferLength = m_BufferMaxNoOfMessages,
+    FetchSize = fetchSize,
+    AutoOffsetReset = OffsetRequest.LargestTime,
+    NumberOfTries = 20,
+    ZooKeeper = new ZooKeeperConfiguration(zookeeperString, 30000, 30000, 2000)
+};
+var balancedConsumer = new ZookeeperConsumerConnector(config, true, m_ConsumerRebalanceHandler, m_ZKDisconnectHandler, m_ZKExpireHandler);
+// grab streams for desired topics 
+var streams = m_ZooKeeperConsumerConnector.CreateMessageStreams(m_TopicMap, new DefaultDecoder());
+var KafkaMessageStream = streams[m_Topic][0];
+// start consuming stream
+foreach (Message message in m_KafkaMessageStream.GetCancellable(cancellationTokenSource.Token))
+....
+```
+
 ## Contribute
 
 Contributions to Kafkanet are welcome.  Here is how you can contribute to Kafkanet:
