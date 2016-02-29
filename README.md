@@ -43,8 +43,8 @@ The Producer can send one message or an entire batch to Kafka. When sending a ba
 var brokerConfig = new BrokerConfiguration()
 {
 	BrokerId = this.brokerId,
-        Host = this.kafkaServerName,
-        Port = this.kafkaPort
+	Host = this.kafkaServerName,
+	Port = this.kafkaPort
 };
 var config = new ProducerConfiguration(new List<BrokerConfiguration> { brokerConfig });
 kafkaProducer = new Producer(config);
@@ -84,11 +84,11 @@ The balanced consumer manages partition assignment for each instance in the same
 ConsumerConfiguration config = new ConsumerConfiguration
 {
 	AutoCommit = false,
-        GroupId = consumerGroupId
+	GroupId = consumerGroupId
 	ConsumerId = uniqueConsumerId
-        MaxFetchBufferLength = m_BufferMaxNoOfMessages,
+	MaxFetchBufferLength = m_BufferMaxNoOfMessages,
 	FetchSize = fetchSize,
-        AutoOffsetReset = OffsetRequest.LargestTime,
+	AutoOffsetReset = OffsetRequest.LargestTime,
 	NumberOfTries = 20,
 	ZooKeeper = new ZooKeeperConfiguration(zookeeperString, 30000, 30000, 2000)
 };
