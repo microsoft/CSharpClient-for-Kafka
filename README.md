@@ -42,9 +42,9 @@ The Producer can send one message or an entire batch to Kafka. When sending a ba
 ```c#
 var brokerConfig = new BrokerConfiguration()
 {
-	BrokerId = this.brokerId,
-	Host = this.kafkaServerName,
-	Port = this.kafkaPort
+    BrokerId = this.brokerId,
+    Host = this.kafkaServerName,
+    Port = this.kafkaPort
 };
 var config = new ProducerConfiguration(new List<BrokerConfiguration> { brokerConfig });
 kafkaProducer = new Producer(config);
@@ -63,9 +63,9 @@ Kafkanet has a higher level wrapper around Consumer which allows consumer reuse 
 // create the Consumer higher level manager
 var managerConfig = new KafkaSimpleManagerConfiguration()
 {
-	FetchSize = FetchSize,
-	BufferSize = BufferSize,
-	Zookeeper = m_zookeeper
+    FetchSize = FetchSize,
+    BufferSize = BufferSize,
+    Zookeeper = m_zookeeper
 };
 m_consumerManager = new KafkaSimpleManager<int, Kafka.Client.Messages.Message>(managerConfig);
 // get all available partitions for a topic through the manager
@@ -83,14 +83,14 @@ The balanced consumer manages partition assignment for each instance in the same
 // Here we create a balanced consumer on one consumer machine for consumerGroupId. All machines consuming for this group will get balanced together
 ConsumerConfiguration config = new ConsumerConfiguration
 {
-	AutoCommit = false,
-	GroupId = consumerGroupId
-	ConsumerId = uniqueConsumerId
-	MaxFetchBufferLength = m_BufferMaxNoOfMessages,
-	FetchSize = fetchSize,
-	AutoOffsetReset = OffsetRequest.LargestTime,
-	NumberOfTries = 20,
-	ZooKeeper = new ZooKeeperConfiguration(zookeeperString, 30000, 30000, 2000)
+    AutoCommit = false,
+    GroupId = consumerGroupId
+    ConsumerId = uniqueConsumerId
+    MaxFetchBufferLength = m_BufferMaxNoOfMessages,
+    FetchSize = fetchSize,
+    AutoOffsetReset = OffsetRequest.LargestTime,
+    NumberOfTries = 20,
+    ZooKeeper = new ZooKeeperConfiguration(zookeeperString, 30000, 30000, 2000)
 };
 var balancedConsumer = new ZookeeperConsumerConnector(config, true, m_ConsumerRebalanceHandler, m_ZKDisconnectHandler, m_ZKExpireHandler);
 // grab streams for desired topics 
