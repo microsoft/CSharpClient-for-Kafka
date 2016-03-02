@@ -48,7 +48,7 @@ var brokerConfig = new BrokerConfiguration()
 };
 var config = new ProducerConfiguration(new List<BrokerConfiguration> { brokerConfig });
 kafkaProducer = new Producer(config);
-// here you construct you batch or single message object
+// here you construct your batch or single message object
 var batch=ConstructBatch();
 kafkaProducer.Send(batch);
 ```
