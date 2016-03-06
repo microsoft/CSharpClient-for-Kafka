@@ -16,7 +16,6 @@
  */
 
 
-
 namespace Kafka.Client.Messages
 {
     using Kafka.Client.Exceptions;
@@ -42,6 +41,22 @@ namespace Kafka.Client.Messages
 
         public static Message Compress(IEnumerable<Message> messages, CompressionCodecs compressionCodec, int partition)
         {
+            return Compress(messages, compressionCodec, partition, Message.NoTimestampValue);
+        }
+
+        public static Message Compress(IEnumerable<Message> messages, CompressionCodecs compressionCodec, int partition, long wrapperMessageTimestamp)
+        {
+            var timestampType = wrapperMessageTimestamp == Message.NoTimestampValue ? TimestampTypes.NoTimestamp : TimestampTypes.LogAppendTime;
+
+            var messageVersionId = 0;
+
+            // Determine which message version for the wrapper based on the message version of the messages being compressed.
+            foreach (var message in messages)
+            {
+                messageVersionId = message.Magic;
+                break;
+            }
+
             switch (compressionCodec)
             {
                 case CompressionCodecs.DefaultCompressionCodec:
@@ -74,11 +89,10 @@ namespace Kafka.Client.Messages
                                 }
                             }
 
-                            Message oneCompressedMessage = new Message(outputStream.ToArray(), compressionCodec)
+                            return new Message(wrapperMessageTimestamp, timestampType, outputStream.ToArray(), null, compressionCodec, messageVersionId)
                             {
                                 PartitionId = partition
                             };
-                            return oneCompressedMessage;
                         }
                     }
 
@@ -95,7 +109,7 @@ namespace Kafka.Client.Messages
 
                         try
                         {
-                            return new Message(SnappyHelper.Compress(inputStream.GetBuffer()), compressionCodec)
+                            return new Message(wrapperMessageTimestamp, timestampType, SnappyHelper.Compress(inputStream.GetBuffer()), null, compressionCodec, messageVersionId)
                             {
                                 PartitionId = partition
                             };
@@ -112,13 +126,13 @@ namespace Kafka.Client.Messages
             }
         }
 
-        public static BufferedMessageSet Decompress(Message message, int partition)
+        public static BufferedMessageSet Decompress(Message wrapperMessage, int partition)
         {
-            switch (message.CompressionCodec)
+            switch (wrapperMessage.CompressionCodec)
             {
                 case CompressionCodecs.DefaultCompressionCodec:
                 case CompressionCodecs.GZIPCompressionCodec:
-                    byte[] inputBytes = message.Payload;
+                    byte[] inputBytes = wrapperMessage.Payload;
                     using (var outputStream = new MemoryStream())
                     {
                         using (var inputStream = new MemoryStream(inputBytes))
@@ -141,18 +155,18 @@ namespace Kafka.Client.Messages
                         outputStream.Position = 0;
                         using (var reader = new KafkaBinaryReader(outputStream))
                         {
-                            return BufferedMessageSet.ParseFrom(reader, (int)outputStream.Length, partition);
+                            return BufferedMessageSet.ParseFrom(reader, wrapperMessage, (int)outputStream.Length, partition);
                         }
                     }
 
                 case CompressionCodecs.SnappyCompressionCodec:
                     try
                     {
-                        using (var stream = new MemoryStream(SnappyHelper.Decompress(message.Payload)))
+                        using (var stream = new MemoryStream(SnappyHelper.Decompress(wrapperMessage.Payload)))
                         {
                             using (var reader = new KafkaBinaryReader(stream))
                             {
-                                return BufferedMessageSet.ParseFrom(reader, (int)stream.Length, partition);
+                                return BufferedMessageSet.ParseFrom(reader, wrapperMessage, (int)stream.Length, partition);
                             }
                         }
                     }
@@ -163,7 +177,7 @@ namespace Kafka.Client.Messages
                     }
 
                 default:
-                    throw new UnknownCodecException(String.Format(CultureInfo.CurrentCulture, "Unknown Codec: {0}", message.CompressionCodec));
+                    throw new UnknownCodecException(String.Format(CultureInfo.CurrentCulture, "Unknown Codec: {0}", wrapperMessage.CompressionCodec));
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Kafka.Client.Requests
     /// </summary>
     public class FetchRequestBuilder
     {
+        private short versionId = FetchRequest.CurrentVersion;
         private int correlationId = -1;
         private string clientId = string.Empty;
         private int maxWait = -1;
@@ -67,6 +68,12 @@ namespace Kafka.Client.Requests
             return this;
         }
 
+        public FetchRequestBuilder VersionId(short versionId)
+        {
+            this.versionId = versionId;
+            return this;
+        }
+
         public FetchRequestBuilder MinBytes(int minBytes)
         {
             this.minBytes = minBytes;
@@ -75,7 +82,7 @@ namespace Kafka.Client.Requests
 
         public FetchRequest Build()
         {
-            return new FetchRequest(correlationId, clientId, maxWait, minBytes, requestMap);
+            return new FetchRequest(versionId, correlationId, clientId, maxWait, minBytes, requestMap);
         }
     }
 }
