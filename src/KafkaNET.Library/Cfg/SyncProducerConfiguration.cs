@@ -35,7 +35,7 @@ namespace Kafka.Client.Cfg
 
         public const int DefaultCorrelationId = -1;
 
-        public const string DefaultClientId = "";
+        public const string DefaultClientId = " ";
 
         public const short DefaultRequiredAcks = 0;
 
