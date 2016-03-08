@@ -124,7 +124,7 @@ namespace Kafka.Client.Cfg
             this.ShutdownTimeout = config.ShutdownTimeout;
             this.MaxFetchBufferLength = config.MaxFetchBufferLength;
             this.ConsumeGroupRebalanceRetryIntervalMs = DefaultConsumeGroupRebalanceRetryIntervalMs;
-            this.ConsumeGroupFindNewLeaderSleepIntervalMs = ConsumeGroupFindNewLeaderSleepIntervalMs;
+            this.ConsumeGroupFindNewLeaderSleepIntervalMs = DefaultConsumeGroupFindNewLeaderSleepIntervalMs;
             if (config.Broker.ElementInformation.IsPresent)
             {
                 this.SetBrokerConfiguration(config.Broker);
