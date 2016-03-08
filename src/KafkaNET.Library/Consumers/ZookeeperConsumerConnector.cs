@@ -215,7 +215,8 @@ namespace Kafka.Client.Consumers
         /// <param name="topic"></param>
         /// <param name="partition"></param>
         /// <param name="offset"></param>
-        public void CommitOffset(string topic, int partition, long offset)
+        /// <param name="setPosition">Indicates whether to set the fetcher's offset to the value committed. Default = true.</param>
+        public void CommitOffset(string topic, int partition, long offset, bool setPosition = true)
         {
             this.EnsuresNotDisposed();
             if (this.GetZkClient() == null)
@@ -241,8 +242,11 @@ namespace Kafka.Client.Consumers
                             topicDirs.ConsumerOffsetDir + "/" +
                             partitionTopicInfo.PartitionId, offset.ToString());
                         partitionTopicInfo.CommitedOffset = offset;
-                        partitionTopicInfo.ConsumeOffset = offset;
-                        partitionTopicInfo.FetchOffset = offset;
+                        if (setPosition)
+                        {
+                            partitionTopicInfo.ConsumeOffset = offset;
+                            partitionTopicInfo.FetchOffset = offset;
+                        }
                     }
                     catch (Exception ex)
                     {
