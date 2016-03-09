@@ -156,8 +156,8 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="ZooKeeperNet, Version=3.4.6.1, Culture=neutral, PublicKeyToken=fefd2c046da35b56, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZooKeeper.Net.3.4.6.2\lib\net40\ZooKeeperNet.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\ZooKeeperNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
