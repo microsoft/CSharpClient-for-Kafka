@@ -39,18 +39,20 @@ namespace Kafka.Client.Responses
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
         }
-        public FetchResponse(int correlationId, IEnumerable<TopicData> data, int size)
+        public FetchResponse(int correlationId, IEnumerable<TopicData> data, int size, int throttleTime)
         {
             Guard.NotNull(data, "data");
             this.CorrelationId = correlationId;
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
             this.Size = size;
+            this.ThrottleTime = throttleTime;
         }
 
         public int Size { get; private set; }
         public int CorrelationId { get; private set; }
         public Dictionary<string, TopicData> TopicDataDict { get; private set; }
+        public int ThrottleTime { get; private set; }
 
         public BufferedMessageSet MessageSet(string topic, int partition)
         {
@@ -92,13 +94,21 @@ namespace Kafka.Client.Responses
 
         public class Parser : IResponseParser<FetchResponse>
         {
+            public Parser(int versionId)
+            {
+                this.VersionId = versionId;
+            }
+
+            private int VersionId { get; set; }
+
             public FetchResponse ParseFrom(KafkaBinaryReader reader)
             {
-                int size = 0, correlationId = 0, dataCount = 0;
+                int size = 0, correlationId = 0, dataCount = 0, throttleTime = 0;
                 try
                 {
                     size = reader.ReadInt32();
                     correlationId = reader.ReadInt32();
+                    if (VersionId > 0) throttleTime = reader.ReadInt32();
                     dataCount = reader.ReadInt32();
                     var data = new TopicData[dataCount];
                     for (int i = 0; i < dataCount; i++)
@@ -106,7 +116,7 @@ namespace Kafka.Client.Responses
                         data[i] = TopicData.ParseFrom(reader);
                     }
 
-                    return new FetchResponse(correlationId, data, size);
+                    return new FetchResponse(correlationId, data, size, throttleTime);
                 }
                 catch (OutOfMemoryException mex)
                 {

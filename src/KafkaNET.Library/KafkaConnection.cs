@@ -139,7 +139,7 @@ namespace Kafka.Client
         {
             this.EnsuresNotDisposed();
             Guard.NotNull(request, "request");
-            return this.Handle(request.RequestBuffer.GetBuffer(), new FetchResponse.Parser());
+            return this.Handle(request.RequestBuffer.GetBuffer(), new FetchResponse.Parser(request.VersionId));
         }
 
         /// <summary>
