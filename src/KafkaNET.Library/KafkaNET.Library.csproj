@@ -172,6 +172,7 @@
     <Compile Include="Cfg\ProducerConfiguration.cs" />
     <Compile Include="Consumers\IConsumerIterator.cs" />
     <Compile Include="Consumers\IKafkaMessageStream.cs" />
+    <Compile Include="Consumers\IZookeeperConsumerConnector.cs" />
     <Compile Include="ZooKeeperIntegration\Events\ChildChangedEventItem.cs" />
     <Compile Include="ZooKeeperIntegration\Events\DataChangedEventItem.cs" />
     <Compile Include="ZooKeeperIntegration\Events\ZooKeeperChildChangedEventArgs.cs" />

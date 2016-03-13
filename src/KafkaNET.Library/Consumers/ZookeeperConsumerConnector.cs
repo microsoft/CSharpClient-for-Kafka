@@ -36,7 +36,7 @@ namespace Kafka.Client.Consumers
     /// The consumer high-level API, that hides the details of brokers from the consumer. 
     /// It also maintains the state of what has been consumed. 
     /// </summary>
-    public class ZookeeperConsumerConnector : KafkaClientBase, IConsumerConnector
+    public class ZookeeperConsumerConnector : KafkaClientBase, IZookeeperConsumerConnector
     {
         public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(ZookeeperConsumerConnector));
         public static readonly int MaxNRetries = 4;
