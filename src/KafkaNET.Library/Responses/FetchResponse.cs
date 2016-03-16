@@ -39,14 +39,14 @@ namespace Kafka.Client.Responses
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
         }
-        public FetchResponse(int correlationId, IEnumerable<TopicData> data, int size, int throttleTime)
+        public FetchResponse(int correlationId, int throttleTime, IEnumerable<TopicData> data, int size)
         {
             Guard.NotNull(data, "data");
             this.CorrelationId = correlationId;
+            this.ThrottleTime = throttleTime;
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
             this.Size = size;
-            this.ThrottleTime = throttleTime;
         }
 
         public int Size { get; private set; }
@@ -117,7 +117,7 @@ namespace Kafka.Client.Responses
                         data[i] = TopicData.ParseFrom(reader);
                     }
 
-                    return new FetchResponse(correlationId, data, size, throttleTime);
+                    return new FetchResponse(correlationId, throttleTime, data, size);
                 }
                 catch (OutOfMemoryException mex)
                 {
