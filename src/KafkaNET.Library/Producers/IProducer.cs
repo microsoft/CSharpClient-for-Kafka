@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+using System.Collections.Generic;
+
 namespace Kafka.Client.Producers
 {
     using Kafka.Client.Cfg;
@@ -28,6 +30,13 @@ namespace Kafka.Client.Producers
     public interface IProducer<TKey, TData> : IDisposable
     {
         ProducerConfiguration Config { get; }
+
+        /// <summary>
+        /// Sends the data to a multiple topics, partitioned by key, using either the
+        /// synchronous or the asynchronous producer.
+        /// </summary>
+        /// <param name="data">The producer data objects that encapsulate the topic, key and message data.</param>
+        void Send(IEnumerable<ProducerData<TKey, TData>> data);
 
         /// <summary>
         /// Sends the data to a single topic, partitioned by key, using either the
