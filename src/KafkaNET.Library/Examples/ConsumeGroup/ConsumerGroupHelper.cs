@@ -260,18 +260,20 @@ namespace KafkaNET.Library.Examples
                         Message lastMessage = null;
                         int count = 0;
                         KafkaMessageStream<Message> messagesStream = null;
+                        ConsumerIterator<Message> iterator = null;
                         using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(cgOptions.CancellationTimeoutMs))
                         {
                             lastMessage = null;
                             IEnumerable<Message> messages = topicData[0].GetCancellable(cancellationTokenSource.Token);
                             messagesStream = (KafkaMessageStream<Message>)messages;
+                            iterator = (ConsumerIterator<Message>)messagesStream.iterator;
                             foreach (Message message in messages)
                             {
                                 latestTotalCount = Interlocked.Increment(ref ConsumerGroupHelper.totalCount);
                                 lastMessage = message;
                                 if (latestTotalCount == 1)
                                 {
-                                    PartitionTopicInfo p = messagesStream.iterator.currentTopicInfo;
+                                    PartitionTopicInfo p = iterator.currentTopicInfo;
                                     Logger.InfoFormat("Read FIRST message, it's offset: {0}  PartitionID:{1}", lastMessage.Offset, p == null ? "null" : p.PartitionId.ToString());
                                 }
                                 hitEndAndCommited = false;
@@ -285,7 +287,7 @@ namespace KafkaNET.Library.Examples
                         {
                             connector.CommitOffsets();
                             consumedTotalCount += count;
-                            PartitionTopicInfo p = messagesStream.iterator.currentTopicInfo;
+                            PartitionTopicInfo p = iterator.currentTopicInfo;
                             Console.WriteLine("\tRead some and commit once, Thread: {8}  consumedTotalCount:{9} Target:{10} LATEST message offset: {0}. PartitionID:{1} -- {2}  Totally read  {3}  will commit offset. {4} FetchOffset:{5}  ConsumeOffset:{6} CommitedOffset:{7}"
                                     , lastMessage.Offset, lastMessage.PartitionId.Value, p == null ? "null" : p.PartitionId.ToString(), latestTotalCount, DateTime.Now
                                     , p == null ? "null" : p.FetchOffset.ToString()
