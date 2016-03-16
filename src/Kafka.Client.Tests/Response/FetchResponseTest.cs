@@ -39,7 +39,7 @@ namespace Kafka.Client.Tests.Response
             writer.Write(messageStream.GetBuffer(), 0, (int)messageStream.Length);
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new KafkaBinaryReader(stream);
-            var response = new FetchResponse.Parser().ParseFrom(reader);
+            var response = new FetchResponse.Parser(0).ParseFrom(reader);
             var set = response.MessageSet("topic1", 111);
             set.Should().NotBeNull();
             var messages = set.Messages.ToList();
