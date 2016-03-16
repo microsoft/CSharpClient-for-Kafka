@@ -39,18 +39,19 @@ namespace Kafka.Client.Responses
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
         }
-        public FetchResponse(int correlationId, IEnumerable<TopicData> data, int size, int throttleTime)
+        public FetchResponse(int correlationId, int throttleTime, IEnumerable<TopicData> data, int size)
         {
             Guard.NotNull(data, "data");
             this.CorrelationId = correlationId;
+            this.ThrottleTime = throttleTime;
             this.TopicDataDict = data.GroupBy(x => x.Topic, x => x)
                .ToDictionary(x => x.Key, x => x.ToList().FirstOrDefault());
             this.Size = size;
-            this.ThrottleTime = throttleTime;
         }
 
         public int Size { get; private set; }
         public int CorrelationId { get; private set; }
+        public int ThrottleTime { get; private set; }
         public Dictionary<string, TopicData> TopicDataDict { get; private set; }
         public int ThrottleTime { get; private set; }
 
@@ -92,14 +93,19 @@ namespace Kafka.Client.Responses
             return new PartitionData(partition, new BufferedMessageSet(Enumerable.Empty<Message>(), partition));
         }
 
+        public static Parser ParserForVersion(int versionId)
+        {
+            return new Parser(versionId);
+        }
+
         public class Parser : IResponseParser<FetchResponse>
         {
+            private readonly int versionId;
+
             public Parser(int versionId)
             {
-                this.VersionId = versionId;
+                this.versionId = versionId;
             }
-
-            private int VersionId { get; set; }
 
             public FetchResponse ParseFrom(KafkaBinaryReader reader)
             {
@@ -108,7 +114,8 @@ namespace Kafka.Client.Responses
                 {
                     size = reader.ReadInt32();
                     correlationId = reader.ReadInt32();
-                    if (VersionId > 0) throttleTime = reader.ReadInt32();
+                    if (versionId > 0)
+                        throttleTime = reader.ReadInt32();
                     dataCount = reader.ReadInt32();
                     var data = new TopicData[dataCount];
                     for (int i = 0; i < dataCount; i++)
@@ -116,7 +123,7 @@ namespace Kafka.Client.Responses
                         data[i] = TopicData.ParseFrom(reader);
                     }
 
-                    return new FetchResponse(correlationId, data, size, throttleTime);
+                    return new FetchResponse(correlationId, throttleTime, data, size);
                 }
                 catch (OutOfMemoryException mex)
                 {

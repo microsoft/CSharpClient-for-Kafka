@@ -111,7 +111,7 @@ namespace Kafka.Client
         {
             this.EnsuresNotDisposed();
             Guard.NotNull(request, "request");
-            return this.Handle(request.RequestBuffer.GetBuffer(), new ProducerResponse.Parser(), request.RequiredAcks != 0);
+            return this.Handle(request.RequestBuffer.GetBuffer(), ProducerResponse.ParserForVersion(request.VersionId), request.RequiredAcks != 0);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Kafka.Client
         {
             this.EnsuresNotDisposed();
             Guard.NotNull(request, "request");
-            return this.Handle(request.RequestBuffer.GetBuffer(), new FetchResponse.Parser(request.VersionId));
+            return this.Handle(request.RequestBuffer.GetBuffer(), FetchResponse.ParserForVersion(request.VersionId));
         }
 
         /// <summary>

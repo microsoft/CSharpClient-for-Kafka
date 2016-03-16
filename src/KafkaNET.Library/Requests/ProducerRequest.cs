@@ -93,7 +93,7 @@ namespace Kafka.Client.Requests
         /// <param name="requiredAcks"></param>
         /// <param name="ackTimeout"></param>
         /// <param name="messagesPerTopic"></param>
-        public ProducerRequest(int correlationId, string clientId, short requiredAcks, int ackTimeout, IDictionary<TopicAndPartition, BufferedMessageSet> messagesPerTopic)
+        public ProducerRequest(short versionId, int correlationId, string clientId, short requiredAcks, int ackTimeout, IDictionary<TopicAndPartition, BufferedMessageSet> messagesPerTopic)
         {
             string topicName = string.Empty;
             int partitionId = -1;
@@ -110,7 +110,7 @@ namespace Kafka.Client.Requests
                 topics[topicName].Add(new PartitionData(partitionId, messagesSet));
             }
 
-            this.VersionId = CurrentVersion;
+            this.VersionId = versionId;
             this.CorrelationId = correlationId;
             this.ClientId = clientId;
             this.RequiredAcks = requiredAcks;

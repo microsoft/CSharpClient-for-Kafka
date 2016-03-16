@@ -49,6 +49,11 @@ namespace Kafka.Client.Messages
 
         public static BufferedMessageSet ParseFrom(KafkaBinaryReader reader, int size, int partitionID)
         {
+            return ParseFrom(reader, null, size, partitionID);
+        }
+
+        public static BufferedMessageSet ParseFrom(KafkaBinaryReader reader, Message wrapperMessage, int size, int partitionID)
+        {
             int bytesLeft = size;
             if (bytesLeft == 0)
             {
@@ -74,8 +79,9 @@ namespace Kafka.Client.Messages
                     break;
                 }
 
-                Message msg = Message.ParseFrom(reader, offset, msgSize, partitionID);
+                Message msg = Message.ParseFrom(reader, wrapperMessage, offset, msgSize, partitionID);
                 bytesLeft -= msgSize;
+
                 messages.Add(msg);
             }
             while (bytesLeft > 0);
@@ -92,6 +98,7 @@ namespace Kafka.Client.Messages
         /// Initializes a new instance of the <see cref="BufferedMessageSet"/> class.
         /// </summary>
         /// <param name="messages">The list of messages.</param>
+        /// <param name="partition"></param>
         public BufferedMessageSet(IEnumerable<Message> messages, int partition)
             : this(messages, (short)ErrorMapping.NoError, partition)
         {

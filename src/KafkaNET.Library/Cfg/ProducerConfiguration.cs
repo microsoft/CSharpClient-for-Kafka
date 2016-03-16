@@ -14,7 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using Kafka.Client.Requests;
+using Kafka.Client.Responses;
+
 namespace Kafka.Client.Cfg
 {
     using Kafka.Client.Messages;
@@ -48,6 +51,7 @@ namespace Kafka.Client.Cfg
             this.ProducerRetries = DefaultProducerRetries;
             this.ProducerRetryExponentialBackoffMinMs = DefaultProducerRetryBackoffMinMs;
             this.ProducerRetryExponentialBackoffMaxMs = DefaultProducerRetryBackoffMaxMs;
+            this.ProducerRequestVersionId = ProducerRequest.CurrentVersion;
             this.ClientId = SyncProducerConfiguration.DefaultClientId;
             this.RequiredAcks = SyncProducerConfiguration.DefaultRequiredAcks;
             this.AckTimeout = SyncProducerConfiguration.DefaultAckTimeout;
@@ -87,6 +91,7 @@ namespace Kafka.Client.Cfg
             this.ProducerRetries = producerConfigTemplate.ProducerRetries;
             this.ProducerRetryExponentialBackoffMinMs = producerConfigTemplate.ProducerRetryExponentialBackoffMinMs;
             this.ProducerRetryExponentialBackoffMaxMs = producerConfigTemplate.ProducerRetryExponentialBackoffMaxMs;
+            this.ProducerRequestVersionId = producerConfigTemplate.ProducerRequestVersionId;
             this.ClientId = producerConfigTemplate.ClientId;
             this.RequiredAcks = producerConfigTemplate.RequiredAcks;
             this.AckTimeout = producerConfigTemplate.AckTimeout;
@@ -110,6 +115,7 @@ namespace Kafka.Client.Cfg
             this.ProducerRetries = producerConfigTemplate.ProducerRetries;
             this.ProducerRetryExponentialBackoffMinMs = producerConfigTemplate.ProducerRetryExponentialBackoffMinMs;
             this.ProducerRetryExponentialBackoffMaxMs = producerConfigTemplate.ProducerRetryExponentialBackoffMaxMs;
+            this.ProducerRequestVersionId = producerConfigTemplate.ProducerRequestVersionId;
             this.ClientId = producerConfigTemplate.ClientId;
             this.RequiredAcks = producerConfigTemplate.RequiredAcks;
             this.AckTimeout = producerConfigTemplate.AckTimeout;
@@ -157,7 +163,9 @@ namespace Kafka.Client.Cfg
             }
         }
 
-        public short VersionId { get; set; }
+        public short TopicMetadataVersionId { get; set; }
+
+        public short ProducerRequestVersionId { get; set; }
 
         public int BufferSize { get; set; }
 
