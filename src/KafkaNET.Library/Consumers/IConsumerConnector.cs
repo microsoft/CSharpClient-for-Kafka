@@ -57,7 +57,8 @@ namespace Kafka.Client.Consumers
         /// <param name="topic">The topic </param>
         /// <param name="partition">The partition</param>
         /// <param name="offset">The offset</param>
-        void CommitOffset(string topic, int partition, long offset);
+        /// <param name="setPosition">Indicates whether to set the fetcher's offset to the value committed. Default = true.</param>
+        void CommitOffset(string topic, int partition, long offset, bool setPosition = true);
 
         /// <summary>
         /// Return offsets of current ConsumerGroup
