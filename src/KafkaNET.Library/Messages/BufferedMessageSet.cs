@@ -113,16 +113,10 @@ namespace Kafka.Client.Messages
         /// Initializes a new instance of the <see cref="BufferedMessageSet"/> class.
         /// </summary>
         /// <param name="messages">
-        ///     The list of messages.
+        /// The list of messages.
         /// </param>
         /// <param name="errorCode">
-        ///     The error code.
-        /// </param>
-        /// <param name="initialOffset">
-        ///     The initial offset.
-        /// </param>
-        /// <param name="partition">
-        ///     The partition.
+        /// The error code.
         /// </param>
         public BufferedMessageSet(IEnumerable<Message> messages, short errorCode, long initialOffset, int partition)
         {
@@ -140,7 +134,6 @@ namespace Kafka.Client.Messages
         /// </summary>
         /// <param name="compressionCodec"></param>
         /// <param name="messages">messages to add</param>
-        /// <param name="partition"></param>
         public BufferedMessageSet(CompressionCodecs compressionCodec, IEnumerable<Message> messages, int partition)
         {
             this.PartitionId = partition;

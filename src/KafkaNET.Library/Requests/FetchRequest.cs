@@ -86,7 +86,6 @@ namespace Kafka.Client.Requests
         }
 
         public short VersionId { get; private set; }
-
         public int CorrelationId { get; private set; }
         public string ClientId { get; private set; }
         public int ReplicaId { get; private set; }
