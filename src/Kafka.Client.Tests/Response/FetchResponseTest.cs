@@ -56,7 +56,7 @@ namespace Kafka.Client.Tests.Response
             writer.Write(123); // correlation id
             if (versionId > 0)
             {
-               writer.Write(456); 
+               writer.Write(456); // throttle time
             }
             writer.Write(1); // data count
             writer.WriteShortString("topic1");
