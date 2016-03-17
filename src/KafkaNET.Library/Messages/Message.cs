@@ -76,8 +76,18 @@ namespace Kafka.Client.Messages
         {
         }
 
+        public Message(byte[] payload, CompressionCodecs compressionCodec)
+            : this(payload, null, compressionCodec)
+        {
+        }
+
         public Message(long timestamp, byte[] payload, CompressionCodecs compressionCodec)
             : this(timestamp, TimestampTypes.CreateTime, payload, null, compressionCodec)
+        {
+        }
+
+        public Message(byte[] payload, byte[] key, CompressionCodecs compressionCodec)
+            : this(NoTimestampValue, TimestampTypes.NoTimestamp, payload, key, compressionCodec)
         {
         }
 

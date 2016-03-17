@@ -48,7 +48,7 @@ namespace Kafka.Client.Tests
 
                 if (useV0Message)
                 {
-                    message = new Message(0L, TimestampTypes.NoTimestamp, payload, CompressionCodecs.NoCompressionCodec);
+                    message = new Message(payload, CompressionCodecs.NoCompressionCodec);
                 }
                 else
                 {
