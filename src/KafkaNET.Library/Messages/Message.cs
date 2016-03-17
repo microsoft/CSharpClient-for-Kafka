@@ -118,8 +118,6 @@ namespace Kafka.Client.Messages
         {
             Guard.NotNull(payload, "payload");
 
-            Timestamp = timestamp;
-
             int length = V0HeaderSize + payload.Length;
             Key = key;
             if (key != null)
@@ -128,22 +126,27 @@ namespace Kafka.Client.Messages
             }
 
             this.Payload = payload;
-            this.Magic = MagicValueV0;
+
             if (compressionCodec != CompressionCodecs.NoCompressionCodec)
             {
                 this.Attributes |=
                     (byte)(CompressionCodecMask & Messages.CompressionCodec.GetCompressionCodecValue(compressionCodec));
-
-                // It seems that the java producer uses magic 0 for compressed messages, so we are sticking with 0 for now
-                // this.Magic = MagicValueWhenCompress;
             }
 
             if (timestampType != TimestampTypes.NoTimestamp)
             {
-                this.Attributes |=
-                    (byte)(TimestampTypeMask & Messages.TimestampType.GetTimestampTypeValue(timestampType));
+                // V1 message
                 this.Magic = MagicValueV1;
+                this.Attributes |=
+                    (byte) (TimestampTypeMask & Messages.TimestampType.GetTimestampTypeValue(timestampType));
+                this.Timestamp = timestamp;
+
                 length += 8;
+            }
+            else
+            {
+                // V0 message
+                this.Magic = MagicValueV0;
             }
 
             this.Size = length;
