@@ -301,7 +301,7 @@ namespace Kafka.Client.Messages
                 sb.Append(this.TimestampType);
             }
 
-            sb.Append(", topic: ");
+            sb.Append(", payload: ");
             try
             {
                 sb.Append(Encoding.UTF8.GetString(this.Payload));
