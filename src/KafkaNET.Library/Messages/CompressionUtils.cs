@@ -99,9 +99,11 @@ namespace Kafka.Client.Messages
                         messageSet.WriteTo(inputStream);
                         inputStream.Position = 0;
 
+                        var timestampType = wrapperMessageTimestamp == Message.NoTimestampValue ? TimestampTypes.NoTimestamp : TimestampTypes.LogAppendTime;
+
                         try
                         {
-                            return new Message(0L, TimestampTypes.NoTimestamp, SnappyHelper.Compress(inputStream.GetBuffer()), compressionCodec)
+                            return new Message(wrapperMessageTimestamp, timestampType, SnappyHelper.Compress(inputStream.GetBuffer()), compressionCodec)
                             {
                                 PartitionId = partition
                             };
