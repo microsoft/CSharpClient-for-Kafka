@@ -105,7 +105,7 @@ namespace Kafka.Client.Messages
         }
 
         public BufferedMessageSet(IEnumerable<Message> messages, short error, int partition)
-            : this(messages, error, (long) 0, partition)
+            : this(messages, error, 0, partition)
         {
         }
 
