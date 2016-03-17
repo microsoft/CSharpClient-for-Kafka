@@ -118,8 +118,12 @@ namespace Kafka.Client.Messages
         /// <param name="errorCode">
         ///     The error code.
         /// </param>
-        /// <param name="initialOffset"></param>
-        /// <param name="partition"></param>
+        /// <param name="initialOffset">
+        ///     The initial offset.
+        /// </param>
+        /// <param name="partition">
+        ///     The partition.
+        /// </param>
         public BufferedMessageSet(IEnumerable<Message> messages, short errorCode, long initialOffset, int partition)
         {
             int length = GetMessageSetSize(messages);
