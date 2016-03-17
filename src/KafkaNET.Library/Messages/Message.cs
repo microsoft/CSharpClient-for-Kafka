@@ -39,7 +39,7 @@ namespace Kafka.Client.Messages
     public class Message : IWritable
     {
         public const int V0HeaderSize = DefaultMagicLength + DefaultCrcLength + DefaultAttributesLength + DefaultKeySizeLength + DefaultValueSizeLength;
-        public const int V1HeaderSize = DefaultMagicLength + DefaultCrcLength + DefaultAttributesLength + DefaultTimestampLength + DefaultKeySizeLength + DefaultValueSizeLength;
+        public const int V1HeaderSize = V0HeaderSize + DefaultTimestampLength;
 
         private const byte MagicValueV0 = 0;
         private const byte MagicValueV1 = 1;
