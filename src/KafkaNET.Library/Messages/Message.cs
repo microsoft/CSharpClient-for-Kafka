@@ -264,7 +264,7 @@ namespace Kafka.Client.Messages
             var beginningPosition = writer.CurrentPos;
             writer.Write(this.Magic);
             writer.Write(this.Attributes);
-            if (this.TimestampType != TimestampTypes.NoTimestamp)
+            if (this.Magic == MagicValueV1)
             {
                 writer.Write(Timestamp);
             }
