@@ -216,6 +216,7 @@ namespace Kafka.Client.Helper
                     {
                         throw ex;
                     }
+                    continue;
                 }
                 retry++;
             }
