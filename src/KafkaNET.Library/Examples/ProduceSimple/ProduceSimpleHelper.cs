@@ -340,7 +340,7 @@ namespace KafkaNET.Library.Examples
                     bKey = System.Text.Encoding.UTF8.GetBytes(string.Format("{0:000000}", 0));
                 }
 
-                Message message = new Message(bVal, bKey, produceroundrobinOptions.CompressionCodec);
+                Message message = new Message(0L, TimestampTypes.NoTimestamp, bVal, bKey, produceroundrobinOptions.CompressionCodec);
                 listOfKeys.Add(bKey);
                 listOfDataNeedSendInOneBatch.Add(new ProducerData<byte[], Message>(produceroundrobinOptions.Topic, bKey, message));
             }

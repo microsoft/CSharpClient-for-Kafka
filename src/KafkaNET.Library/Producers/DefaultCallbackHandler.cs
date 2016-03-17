@@ -433,6 +433,7 @@ namespace Kafka.Client.Producers
                 List<ProducerData<TK, Message>> produceData = keyValuePair.Value;
                 List<Message> messages = new List<Message>();
                 produceData.ForEach(p => messages.AddRange(p.Data));
+
                 switch (this.producerConfig.CompressionCodec)
                 {
                     case CompressionCodecs.NoCompressionCodec:

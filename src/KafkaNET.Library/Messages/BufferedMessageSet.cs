@@ -49,6 +49,11 @@ namespace Kafka.Client.Messages
 
         public static BufferedMessageSet ParseFrom(KafkaBinaryReader reader, int size, int partitionID)
         {
+            return ParseFrom(null, reader, size, partitionID);
+        }
+
+        public static BufferedMessageSet ParseFrom(Message wrapperMessage, KafkaBinaryReader reader, int size, int partitionID)
+        {
             int bytesLeft = size;
             if (bytesLeft == 0)
             {
@@ -74,8 +79,9 @@ namespace Kafka.Client.Messages
                     break;
                 }
 
-                Message msg = Message.ParseFrom(reader, offset, msgSize, partitionID);
+                Message msg = Message.ParseFrom(reader, wrapperMessage, offset, msgSize, partitionID);
                 bytesLeft -= msgSize;
+
                 messages.Add(msg);
             }
             while (bytesLeft > 0);
@@ -92,13 +98,14 @@ namespace Kafka.Client.Messages
         /// Initializes a new instance of the <see cref="BufferedMessageSet"/> class.
         /// </summary>
         /// <param name="messages">The list of messages.</param>
+        /// <param name="partition"></param>
         public BufferedMessageSet(IEnumerable<Message> messages, int partition)
             : this(messages, (short)ErrorMapping.NoError, partition)
         {
         }
 
         public BufferedMessageSet(IEnumerable<Message> messages, short error, int partition)
-            : this(messages, error, 0, partition)
+            : this(messages, error, (long) 0, partition)
         {
         }
 
@@ -106,11 +113,13 @@ namespace Kafka.Client.Messages
         /// Initializes a new instance of the <see cref="BufferedMessageSet"/> class.
         /// </summary>
         /// <param name="messages">
-        /// The list of messages.
+        ///     The list of messages.
         /// </param>
         /// <param name="errorCode">
-        /// The error code.
+        ///     The error code.
         /// </param>
+        /// <param name="initialOffset"></param>
+        /// <param name="partition"></param>
         public BufferedMessageSet(IEnumerable<Message> messages, short errorCode, long initialOffset, int partition)
         {
             int length = GetMessageSetSize(messages);
@@ -127,6 +136,7 @@ namespace Kafka.Client.Messages
         /// </summary>
         /// <param name="compressionCodec"></param>
         /// <param name="messages">messages to add</param>
+        /// <param name="partition"></param>
         public BufferedMessageSet(CompressionCodecs compressionCodec, IEnumerable<Message> messages, int partition)
         {
             this.PartitionId = partition;

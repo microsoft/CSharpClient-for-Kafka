@@ -126,7 +126,7 @@ namespace KafkaNET.Library.Examples
                 String val = KafkaClientHelperUtils.GetRandomString(producewrapperOption.MessageSize);
                 byte[] bVal = System.Text.Encoding.UTF8.GetBytes(val);
 
-                Message message = new Message(bVal, bKey, producewrapperOption.CompressionCodec);
+                Message message = new Message(0L, TimestampTypes.NoTimestamp, bVal, bKey, producewrapperOption.CompressionCodec);
                 listOfDataNeedSendInOneBatch.Add(new ProducerData<byte[], Message>(producewrapperOption.Topic, message));
             }
         }

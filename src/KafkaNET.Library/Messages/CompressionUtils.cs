@@ -74,7 +74,7 @@ namespace Kafka.Client.Messages
                                 }
                             }
 
-                            Message oneCompressedMessage = new Message(outputStream.ToArray(), compressionCodec)
+                            Message oneCompressedMessage = new Message(0L, outputStream.ToArray(), compressionCodec, TimestampTypes.NoTimestamp)
                             {
                                 PartitionId = partition
                             };
@@ -95,7 +95,7 @@ namespace Kafka.Client.Messages
 
                         try
                         {
-                            return new Message(SnappyHelper.Compress(inputStream.GetBuffer()), compressionCodec)
+                            return new Message(0L, SnappyHelper.Compress(inputStream.GetBuffer()), compressionCodec, TimestampTypes.NoTimestamp)
                             {
                                 PartitionId = partition
                             };

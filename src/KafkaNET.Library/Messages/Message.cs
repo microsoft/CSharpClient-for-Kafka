@@ -48,13 +48,16 @@ namespace Kafka.Client.Messages
         /// See https://cwiki.apache.org/confluence/display/KAFKA/Wire+Format for detail
         /// </summary>
         private const byte MagicValueWhenCompress = 1;
+        private const byte MagicValueWhenTimestamped = 1;
         private const byte DefaultMagicLength = 1;
         private const byte DefaultCrcLength = 4;
         private const byte MagicOffset = DefaultCrcLength;
         private const byte DefaultAttributesLength = 1;
         private const byte DefaultKeySizeLength = 4;
         private const byte DefaultValueSizeLength = 4;
-        private const byte CompressionCodeMask = 3;
+        private const byte CompressionCodeMask = 7;
+        private const byte TimestampTypeMask = 8;
+        public const long NoTimestampValue = -1;
 
         private long _offset = -1;
 
@@ -68,13 +71,13 @@ namespace Kafka.Client.Messages
         /// Initializes the magic number as default and the checksum as null. It will be automatically computed.
         /// </remarks>
         public Message(byte[] payload)
-            : this(payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(0L, TimestampTypes.NoTimestamp, payload, null, CompressionCodecs.NoCompressionCodec)
         {
             Guard.NotNull(payload, "payload");
         }
 
-        public Message(byte[] payload, CompressionCodecs compressionCodec)
-            : this(payload, null, compressionCodec)
+        public Message(long timestamp, byte[] payload, CompressionCodecs compressionCodec, TimestampTypes timestampType)
+            : this(timestamp, timestampType, payload, null, compressionCodec)
         {
             Guard.NotNull(payload, "payload");
         }
@@ -82,12 +85,16 @@ namespace Kafka.Client.Messages
         /// <summary>
         /// Initializes a new instance of the Message class.
         /// </summary>
+        /// <param name="timestamp"></param>
+        /// <param name="timestampType">The timestamp type.</param>
         /// <param name="payload">The data for the payload.</param>
-        /// <param name="magic">The magic identifier.</param>
-        /// <param name="checksum">The checksum for the payload.</param>
-        public Message(byte[] payload, byte[] key, CompressionCodecs compressionCodec)
+        /// <param name="key">The key.</param>
+        /// <param name="compressionCodec">The compression codec.</param>
+        public Message(long timestamp, TimestampTypes timestampType, byte[] payload, byte[] key, CompressionCodecs compressionCodec)
         {
             Guard.NotNull(payload, "payload");
+
+            Timestamp = timestamp;
 
             int length = DefaultHeaderSize + payload.Length;
             Key = key;
@@ -107,8 +114,20 @@ namespace Kafka.Client.Messages
                 // this.Magic = MagicValueWhenCompress;
             }
 
+            if (timestampType != TimestampTypes.NoTimestamp)
+            {
+                this.Attributes |=
+                    (byte)(TimestampTypeMask & Messages.TimestampType.GetTimestampTypeValue(timestampType));
+                this.Magic = MagicValueWhenTimestamped;
+            }
+
             this.Size = length;
         }
+
+        /// <summary>
+        /// Gets the timestamp.
+        /// </summary>
+        public long Timestamp { get; private set; }
 
         /// <summary>
         /// Gets the payload.
@@ -171,6 +190,14 @@ namespace Kafka.Client.Messages
             get
             {
                 return Messages.CompressionCodec.GetCompressionCodec(Attributes & CompressionCodeMask);
+            }
+        }
+
+        public TimestampTypes TimestampType
+        {
+            get
+            {
+                return Messages.TimestampType.GetTimestampType(Attributes & TimestampTypeMask);
             }
         }
 
@@ -257,7 +284,7 @@ namespace Kafka.Client.Messages
         * 7. V byte payload
         *
         */
-        internal static Message ParseFrom(KafkaBinaryReader reader, long offset, int size, int partitionID)
+        internal static Message ParseFrom(KafkaBinaryReader reader, Message wrapperMessage, long offset, int size, int partitionID)
         {
             Message result;
             int readed = 0;
@@ -267,10 +294,23 @@ namespace Kafka.Client.Messages
             readed++;
 
             byte[] payload;
-            if (magic == 2 || magic == 0) // some producers (CLI) send magic 0 while others have value of 2
+            if (magic <= 2) // some producers (CLI) send magic 0 while others have value of 2. v1 messages have magic = 1
             {
                 byte attributes = reader.ReadByte();
                 readed++;
+                var timestampType = TimestampTypes.NoTimestamp;
+                var timestamp = NoTimestampValue;
+                if (magic == 1) // v1 message format
+                {
+                    timestamp = reader.ReadInt64();
+                    timestampType = Messages.TimestampType.GetTimestampType(attributes & TimestampTypeMask);
+
+                    // If wrapper message is LOG_APPEND_TIME and exists, use it.
+                    if (wrapperMessage != null && wrapperMessage.TimestampType == TimestampTypes.LogAppendTime && wrapperMessage.Timestamp != NoTimestampValue)
+                    {
+                        timestamp = wrapperMessage.Timestamp;
+                    }
+                }
                 var keyLength = reader.ReadInt32();
                 readed += 4;
                 byte[] key = null;
@@ -283,7 +323,10 @@ namespace Kafka.Client.Messages
                 readed += 4;
                 payload = reader.ReadBytes(payloadSize);
                 readed += payloadSize;
-                result = new Message(payload, key, Messages.CompressionCodec.GetCompressionCodec(attributes & CompressionCodeMask))
+
+                var compressionCodec = Messages.CompressionCodec.GetCompressionCodec(attributes & CompressionCodeMask);
+
+                result = new Message(timestamp, timestampType, payload, key, compressionCodec)
                 {
                     Offset = offset,
                     PartitionId = partitionID

@@ -41,7 +41,7 @@ namespace Kafka.Client.Tests
         public void GetBytesValidSequence()
         {
             var payload = Encoding.UTF8.GetBytes("kafka");
-            Message message = new Message(payload, CompressionCodecs.NoCompressionCodec);
+            Message message = new Message(0L, payload, CompressionCodecs.NoCompressionCodec, TimestampTypes.NoTimestamp);
 
             MemoryStream ms = new MemoryStream();
             message.WriteTo(ms);
