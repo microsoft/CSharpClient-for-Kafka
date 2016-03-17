@@ -13,6 +13,7 @@ namespace Kafka.Client.Helper
     using Kafka.Client.Producers.Sync;
     using Kafka.Client.Requests;
     using Kafka.Client.Utils;
+    using Microsoft.KafkaNET.Library.Util;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -209,9 +210,9 @@ namespace Kafka.Client.Helper
                 catch (Exception ex)
                 {
                     Logger.WarnFormat("Got exception while refreshing metadata of topic {0}, will RecreateSyncProducerPoolForMetadata and retry . {1} ",topic,
-                     ,ExceptionUtil.GetExceptionDetailInfo(ex));
+                     ExceptionUtil.GetExceptionDetailInfo(ex));
                     RecreateSyncProducerPoolForMetadata();
-                    retry++
+                    retry++;
                     if (retry >= maxRetryCount)
                     {
                         throw ex;
