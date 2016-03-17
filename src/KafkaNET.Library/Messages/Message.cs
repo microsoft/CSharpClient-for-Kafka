@@ -124,6 +124,7 @@ namespace Kafka.Client.Messages
             {
                 // V0 message
                 this.Magic = MagicValueV0;
+                this.Timestamp = NoTimestampValue;
                 length = V0HeaderSize;
             }
             else
