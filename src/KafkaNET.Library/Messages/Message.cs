@@ -51,7 +51,7 @@ namespace Kafka.Client.Messages
         private const byte DefaultTimestampLength = 8;
         private const byte DefaultKeySizeLength = 4;
         private const byte DefaultValueSizeLength = 4;
-        private const byte CompressionCodeMask = 7;
+        private const byte CompressionCodecMask = 7;
         private const byte TimestampTypeMask = 8;
         public const long NoTimestampValue = -1;
 
@@ -122,7 +122,7 @@ namespace Kafka.Client.Messages
             if (compressionCodec != CompressionCodecs.NoCompressionCodec)
             {
                 this.Attributes |=
-                    (byte)(CompressionCodeMask & Messages.CompressionCodec.GetCompressionCodecValue(compressionCodec));
+                    (byte)(CompressionCodecMask & Messages.CompressionCodec.GetCompressionCodecValue(compressionCodec));
 
                 // It seems that the java producer uses magic 0 for compressed messages, so we are sticking with 0 for now
                 // this.Magic = MagicValueWhenCompress;
@@ -204,7 +204,7 @@ namespace Kafka.Client.Messages
         {
             get
             {
-                return Messages.CompressionCodec.GetCompressionCodec(Attributes & CompressionCodeMask);
+                return Messages.CompressionCodec.GetCompressionCodec(Attributes & CompressionCodecMask);
             }
         }
 
@@ -347,7 +347,7 @@ namespace Kafka.Client.Messages
                 payload = reader.ReadBytes(payloadSize);
                 readed += payloadSize;
 
-                var compressionCodec = Messages.CompressionCodec.GetCompressionCodec(attributes & CompressionCodeMask);
+                var compressionCodec = Messages.CompressionCodec.GetCompressionCodec(attributes & CompressionCodecMask);
 
                 result = new Message(timestamp, timestampType, payload, key, compressionCodec)
                 {
