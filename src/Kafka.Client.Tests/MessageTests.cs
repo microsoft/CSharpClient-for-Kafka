@@ -76,6 +76,7 @@ namespace Kafka.Client.Tests
 
                     if (!useV0Message)
                     {
+                        // timestamp
                         Assert.AreEqual(123L, reader.ReadInt64());
                     }
 
