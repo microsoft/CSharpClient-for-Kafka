@@ -102,7 +102,7 @@ namespace KafkaNET.Library.Examples
                             string val = KafkaClientHelperUtils.GetRandomString(testOptions.MessageSize);
                             byte[] bVal = System.Text.Encoding.UTF8.GetBytes(val);
                             //Set the key to partitionID, so it can directly fall into  that partition.
-                            Message message = new Message(0L, bVal, CompressionCodecs.DefaultCompressionCodec, TimestampTypes.NoTimestamp);
+                            Message message = new Message(0L, TimestampTypes.NoTimestamp, bVal, CompressionCodecs.DefaultCompressionCodec);
                             listOfDataNeedSendInOneBatch.Add(new ProducerData<int, Message>(testOptions.Topic, i, message));
                             TestBug1490652DataSent[i].Add(j, val);
                         }

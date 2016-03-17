@@ -38,21 +38,17 @@ namespace Kafka.Client.Messages
     /// </remarks>
     public class Message : IWritable
     {
-        public const int DefaultHeaderSize = DefaultMagicLength + DefaultCrcLength + DefaultAttributesLength + DefaultKeySizeLength + DefaultValueSizeLength;
+        public const int V0HeaderSize = DefaultMagicLength + DefaultCrcLength + DefaultAttributesLength + DefaultKeySizeLength + DefaultValueSizeLength;
+        public const int V1HeaderSize = DefaultMagicLength + DefaultCrcLength + DefaultAttributesLength + DefaultTimestampLength + DefaultKeySizeLength + DefaultValueSizeLength;
 
-        private const byte DefaultMagicValue = 0;
+        private const byte MagicValueV0 = 0;
+        private const byte MagicValueV1 = 1;
 
-
-        /// <summary>
-        /// Need set magic to 1 while compress,
-        /// See https://cwiki.apache.org/confluence/display/KAFKA/Wire+Format for detail
-        /// </summary>
-        private const byte MagicValueWhenCompress = 1;
-        private const byte MagicValueWhenTimestamped = 1;
         private const byte DefaultMagicLength = 1;
         private const byte DefaultCrcLength = 4;
         private const byte MagicOffset = DefaultCrcLength;
         private const byte DefaultAttributesLength = 1;
+        private const byte DefaultTimestampLength = 8;
         private const byte DefaultKeySizeLength = 4;
         private const byte DefaultValueSizeLength = 4;
         private const byte CompressionCodeMask = 7;
@@ -73,13 +69,31 @@ namespace Kafka.Client.Messages
         public Message(byte[] payload)
             : this(0L, TimestampTypes.NoTimestamp, payload, null, CompressionCodecs.NoCompressionCodec)
         {
-            Guard.NotNull(payload, "payload");
         }
 
-        public Message(long timestamp, byte[] payload, CompressionCodecs compressionCodec, TimestampTypes timestampType)
+        public Message(long timestamp, byte[] payload)
+            : this(timestamp, TimestampTypes.CreateTime, payload, null, CompressionCodecs.NoCompressionCodec)
+        {
+        }
+
+        public Message(long timestamp, byte[] payload, CompressionCodecs compressionCodec)
+            : this(timestamp, TimestampTypes.CreateTime, payload, null, compressionCodec)
+        {
+        }
+
+        public Message(long timestamp, TimestampTypes timestampType, byte[] payload, CompressionCodecs compressionCodec)
             : this(timestamp, timestampType, payload, null, compressionCodec)
         {
-            Guard.NotNull(payload, "payload");
+        }
+
+        public Message(long timestamp, TimestampTypes timestampType, byte[] payload)
+            : this(timestamp, timestampType, payload, null, CompressionCodecs.NoCompressionCodec)
+        {
+        }
+
+        public Message(long timestamp, byte[] payload, byte[] key, CompressionCodecs compressionCodec)
+            : this(timestamp, TimestampTypes.CreateTime, payload, null, CompressionCodecs.NoCompressionCodec)
+        {
         }
 
         /// <summary>
@@ -96,7 +110,7 @@ namespace Kafka.Client.Messages
 
             Timestamp = timestamp;
 
-            int length = DefaultHeaderSize + payload.Length;
+            int length = V0HeaderSize + payload.Length;
             Key = key;
             if (key != null)
             {
@@ -104,7 +118,7 @@ namespace Kafka.Client.Messages
             }
 
             this.Payload = payload;
-            this.Magic = DefaultMagicValue;
+            this.Magic = MagicValueV0;
             if (compressionCodec != CompressionCodecs.NoCompressionCodec)
             {
                 this.Attributes |=
@@ -118,7 +132,8 @@ namespace Kafka.Client.Messages
             {
                 this.Attributes |=
                     (byte)(TimestampTypeMask & Messages.TimestampType.GetTimestampTypeValue(timestampType));
-                this.Magic = MagicValueWhenTimestamped;
+                this.Magic = MagicValueV1;
+                length += 8;
             }
 
             this.Size = length;
@@ -197,6 +212,7 @@ namespace Kafka.Client.Messages
         {
             get
             {
+                if (Magic == MagicValueV0) return TimestampTypes.NoTimestamp;
                 return Messages.TimestampType.GetTimestampType(Attributes & TimestampTypeMask);
             }
         }
@@ -231,6 +247,10 @@ namespace Kafka.Client.Messages
             var beginningPosition = writer.CurrentPos;
             writer.Write(this.Magic);
             writer.Write(this.Attributes);
+            if (this.TimestampType != TimestampTypes.NoTimestamp)
+            {
+                writer.Write(Timestamp);
+            }
             writer.Write(this.KeyLength);
             if (KeyLength != -1)
             {
@@ -309,7 +329,10 @@ namespace Kafka.Client.Messages
                     if (wrapperMessage != null && wrapperMessage.TimestampType == TimestampTypes.LogAppendTime && wrapperMessage.Timestamp != NoTimestampValue)
                     {
                         timestamp = wrapperMessage.Timestamp;
+                        timestampType = wrapperMessage.TimestampType;
                     }
+
+                    readed += 8;
                 }
                 var keyLength = reader.ReadInt32();
                 readed += 4;
@@ -334,8 +357,8 @@ namespace Kafka.Client.Messages
             }
             else
             {
-                payload = reader.ReadBytes(size - DefaultHeaderSize);
-                readed += size - DefaultHeaderSize;
+                payload = reader.ReadBytes(size - V0HeaderSize);
+                readed += size - V0HeaderSize;
                 result = new Message(payload) { Offset = offset, PartitionId = partitionID };
             }
 
@@ -353,7 +376,7 @@ namespace Kafka.Client.Messages
         internal void CleanMagicAndAttributesBeforeCompress()
         {
             this.Attributes = 0;
-            this.Magic = DefaultMagicValue;
+            this.Magic = MagicValueV0;
         }
 
         /// <summary>

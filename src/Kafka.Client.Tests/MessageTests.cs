@@ -40,37 +40,55 @@ namespace Kafka.Client.Tests
         [TestCategory(TestCategories.BVT)]
         public void GetBytesValidSequence()
         {
-            var payload = Encoding.UTF8.GetBytes("kafka");
-            Message message = new Message(0L, payload, CompressionCodecs.NoCompressionCodec, TimestampTypes.NoTimestamp);
-
-            MemoryStream ms = new MemoryStream();
-            message.WriteTo(ms);
-
-            Assert.AreEqual(message.Size, ms.Length);
-
-            var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int)(ms.Length - 4));
-
-            // first 4 bytes = the crc
-            using (var reader = new KafkaBinaryReader(ms))
+            for (var i = 0; i < 2; i++)
             {
-                Assert.AreEqual(crc, reader.ReadUInt32());
+                var useV0Message = i == 1;
+                var payload = Encoding.UTF8.GetBytes("kafka");
+                Message message;
 
-                // magic
-                Assert.AreEqual(message.Magic, reader.ReadByte());
+                if (useV0Message)
+                {
+                    message = new Message(0L, TimestampTypes.NoTimestamp, payload, CompressionCodecs.NoCompressionCodec);
+                }
+                else
+                {
+                    message = new Message(123L, TimestampTypes.CreateTime, payload, CompressionCodecs.NoCompressionCodec);
+                }
 
-                // attributes
-                Assert.AreEqual((byte)0, reader.ReadByte());
+                MemoryStream ms = new MemoryStream();
+                message.WriteTo(ms);
 
-                // key size
-                Assert.AreEqual(-1, reader.ReadInt32());
+                Assert.AreEqual(message.Magic, useV0Message ? 0 : 1);
+                Assert.AreEqual(message.Size, ms.Length);
 
-                // payload size
-                Assert.AreEqual(payload.Length, reader.ReadInt32());
+                var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int) (ms.Length - 4));
 
-                // remaining bytes = the payload
-                payload.SequenceEqual(reader.ReadBytes(10)).Should().BeTrue();
+                // first 4 bytes = the crc
+                using (var reader = new KafkaBinaryReader(ms))
+                {
+                    Assert.AreEqual(crc, reader.ReadUInt32());
+
+                    // magic
+                    Assert.AreEqual(message.Magic, reader.ReadByte());
+
+                    // attributes
+                    Assert.AreEqual((byte) 0, reader.ReadByte());
+
+                    if (!useV0Message)
+                    {
+                        Assert.AreEqual(123L, reader.ReadInt64());
+                    }
+
+                    // key size
+                    Assert.AreEqual(-1, reader.ReadInt32());
+
+                    // payload size
+                    Assert.AreEqual(payload.Length, reader.ReadInt32());
+
+                    // remaining bytes = the payload
+                    payload.SequenceEqual(reader.ReadBytes(10)).Should().BeTrue();
+                }
             }
         }
-
     }
 }

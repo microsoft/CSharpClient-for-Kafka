@@ -52,7 +52,6 @@ namespace Kafka.Client.Responses
         public int Size { get; private set; }
         public int CorrelationId { get; private set; }
         public int ThrottleTime { get; private set; }
-        public int MessageVersionId { get; private set; }
         public Dictionary<string, TopicData> TopicDataDict { get; private set; }
 
         public BufferedMessageSet MessageSet(string topic, int partition)

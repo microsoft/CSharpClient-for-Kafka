@@ -49,10 +49,10 @@ namespace Kafka.Client.Messages
 
         public static BufferedMessageSet ParseFrom(KafkaBinaryReader reader, int size, int partitionID)
         {
-            return ParseFrom(null, reader, size, partitionID);
+            return ParseFrom(reader, null, size, partitionID);
         }
 
-        public static BufferedMessageSet ParseFrom(Message wrapperMessage, KafkaBinaryReader reader, int size, int partitionID)
+        public static BufferedMessageSet ParseFrom(KafkaBinaryReader reader, Message wrapperMessage, int size, int partitionID)
         {
             int bytesLeft = size;
             if (bytesLeft == 0)

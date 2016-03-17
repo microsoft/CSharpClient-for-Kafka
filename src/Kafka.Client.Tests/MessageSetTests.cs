@@ -34,28 +34,44 @@ namespace Kafka.Client.Tests
         [TestCategory(TestCategories.BVT)]
         public void BufferedMessageSetWriteToValidSequence()
         {
-            byte[] messageBytes = { 1, 2, 3, 4, 5 };
-            var msg1 = new Message(messageBytes) { Offset = 0 };
-            var msg2 = new Message(messageBytes);
-            msg2.Offset = 1;
-            MessageSet messageSet = new BufferedMessageSet(new List<Message>() { msg1, msg2 }, 0);
-            var ms = new MemoryStream();
-            messageSet.WriteTo(ms);
-
-            var reader = new KafkaBinaryReader(ms);
-            int baseOffset = 0;
-            for (int i = 0; i < 2; ++i)
+            for (var i = 0; i < 2; i++)
             {
-                reader.ReadInt64().Should().Be(i); // offset
-                var msgLength = reader.ReadInt32(); // length
-                msgLength.Should().Be(Message.DefaultHeaderSize + msg1.PayloadSize);
-                reader.ReadUInt32().Should().Be(Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), baseOffset + 8 + 4 + 4, msgLength - 4));
-                reader.ReadByte().Should().Be(0); // magic                
-                reader.ReadByte().Should().Be(msg1.Attributes);
-                reader.ReadInt32().Should().Be(-1); // key length
-                reader.ReadInt32().Should().Be(messageBytes.Length); // message length
-                reader.ReadBytes(messageBytes.Length).SequenceEqual(messageBytes).Should().BeTrue();
-                baseOffset += 8 + 4 + msgLength;
+                var useV0Message = i == 1;
+                byte[] messageBytes = { 1, 2, 3, 4, 5 };
+                Message msg1, msg2;
+
+                if (useV0Message)
+                {
+                    msg1 = new Message(messageBytes) {Offset = 0};
+                    msg2 = new Message(messageBytes);
+                }
+                else
+                {
+                    msg1 = new Message(123L, TimestampTypes.CreateTime, messageBytes) {Offset = 0};
+                    msg2 = new Message(123L, TimestampTypes.CreateTime, messageBytes);
+                }
+
+                msg2.Offset = 1;
+                MessageSet messageSet = new BufferedMessageSet(new List<Message>() { msg1, msg2 }, 0);
+                var ms = new MemoryStream();
+                messageSet.WriteTo(ms);
+
+                var reader = new KafkaBinaryReader(ms);
+                int baseOffset = 0;
+                for (int j = 0; j < 2; ++j)
+                {
+                    reader.ReadInt64().Should().Be(j); // offset
+                    var msgLength = reader.ReadInt32(); // length
+                    msgLength.Should().Be((useV0Message ? Message.V0HeaderSize : Message.V1HeaderSize) + msg1.PayloadSize);
+                    reader.ReadUInt32().Should().Be(Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), baseOffset + 8 + 4 + 4, msgLength - 4));
+                    reader.ReadByte().Should().Be(useV0Message ? (byte)0 : (byte)1); // magic
+                    reader.ReadByte().Should().Be(msg1.Attributes);
+                    if (!useV0Message) reader.ReadInt64().Should().Be(123L); // Timestamp
+                    reader.ReadInt32().Should().Be(-1); // key length
+                    reader.ReadInt32().Should().Be(messageBytes.Length); // message length
+                    reader.ReadBytes(messageBytes.Length).SequenceEqual(messageBytes).Should().BeTrue();
+                    baseOffset += 8 + 4 + msgLength;
+                }
             }
         }
 
@@ -63,13 +79,28 @@ namespace Kafka.Client.Tests
         [TestCategory(TestCategories.BVT)]
         public void SetSizeValid()
         {
-            byte[] messageBytes = new byte[] { 1, 2, 3, 4, 5 };
-            Message msg1 = new Message(messageBytes);
-            Message msg2 = new Message(messageBytes);
-            MessageSet messageSet = new BufferedMessageSet(new List<Message>() { msg1, msg2 }, 0);
-            Assert.AreEqual(
-                2 * (8 + 4 + Message.DefaultHeaderSize + messageBytes.Length),
-                messageSet.SetSize);
+            for (var i = 0; i < 2; i++)
+            {
+                var useV0Message = i == 1;
+                byte[] messageBytes = new byte[] {1, 2, 3, 4, 5};
+                Message msg1, msg2;
+
+                if (useV0Message)
+                {
+                    msg1 = new Message(messageBytes);
+                    msg2 = new Message(messageBytes);
+                }
+                else
+                {
+                    msg1 = new Message(123L, TimestampTypes.CreateTime, messageBytes);
+                    msg2 = new Message(123L, TimestampTypes.CreateTime, messageBytes);
+                }
+
+                MessageSet messageSet = new BufferedMessageSet(new List<Message>() {msg1, msg2}, 0);
+                Assert.AreEqual(
+                    2 * (8 + 4 + (useV0Message ? Message.V0HeaderSize : Message.V1HeaderSize) + messageBytes.Length),
+                    messageSet.SetSize);
+            }
         }
     }
 }
