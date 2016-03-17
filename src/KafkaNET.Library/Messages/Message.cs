@@ -290,10 +290,15 @@ namespace Kafka.Client.Messages
             var sb = new StringBuilder();
             sb.Append("Magic: ");
             sb.Append(this.Magic);
-            if (this.Magic == 1)
+            sb.Append(", Attributes: ");
+            sb.Append(this.Attributes);
+
+            if (this.Magic == MagicValueV1)
             {
-                sb.Append(", Attributes: ");
-                sb.Append(this.Attributes);
+                sb.Append(", Timestamp: ");
+                sb.Append(this.Timestamp);
+                sb.Append(", TimestampType: ");
+                sb.Append(this.TimestampType);
             }
 
             sb.Append(", topic: ");
