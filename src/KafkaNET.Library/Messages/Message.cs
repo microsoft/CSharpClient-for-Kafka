@@ -67,12 +67,17 @@ namespace Kafka.Client.Messages
         /// Initializes the magic number as default and the checksum as null. It will be automatically computed.
         /// </remarks>
         public Message(byte[] payload)
-            : this(NoTimestampValue, TimestampTypes.NoTimestamp, payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(NoTimestampValue, TimestampTypes.NoTimestamp, payload)
+        {
+        }
+
+        public Message(DateTime timestamp, byte[] payload)
+            : this(DateTimeToUnixTime(timestamp), payload)
         {
         }
 
         public Message(long timestamp, byte[] payload)
-            : this(timestamp, TimestampTypes.CreateTime, payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(timestamp, payload, CompressionCodecs.NoCompressionCodec)
         {
         }
 
@@ -81,8 +86,13 @@ namespace Kafka.Client.Messages
         {
         }
 
+        public Message(DateTime timestamp, byte[] payload, CompressionCodecs compressionCodec)
+            : this(DateTimeToUnixTime(timestamp), payload, compressionCodec)
+        {
+        }
+
         public Message(long timestamp, byte[] payload, CompressionCodecs compressionCodec)
-            : this(timestamp, TimestampTypes.CreateTime, payload, null, compressionCodec)
+            : this(timestamp, TimestampTypes.CreateTime, payload, compressionCodec)
         {
         }
 
@@ -97,12 +107,17 @@ namespace Kafka.Client.Messages
         }
 
         public Message(long timestamp, TimestampTypes timestampType, byte[] payload)
-            : this(timestamp, timestampType, payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(timestamp, timestampType, payload, CompressionCodecs.NoCompressionCodec)
+        {
+        }
+
+        public Message(DateTime timestamp, byte[] payload, byte[] key, CompressionCodecs compressionCodec)
+            : this(DateTimeToUnixTime(timestamp), TimestampTypes.CreateTime, payload, key, compressionCodec)
         {
         }
 
         public Message(long timestamp, byte[] payload, byte[] key, CompressionCodecs compressionCodec)
-            : this(timestamp, TimestampTypes.CreateTime, payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(timestamp, TimestampTypes.CreateTime, payload, key, compressionCodec)
         {
         }
 
@@ -415,6 +430,13 @@ namespace Kafka.Client.Messages
         private uint ComputeChecksum(byte[] message, int offset, int count)
         {
             return Crc32Hasher.ComputeCrcUint32(message, offset, count);
+        }
+
+        private static readonly DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+
+        private static long DateTimeToUnixTime(DateTime dateTime)
+        {
+            return (long)(TimeZoneInfo.ConvertTimeToUtc(dateTime) - unixEpoch).TotalMilliseconds;
         }
     }
 }
