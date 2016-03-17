@@ -67,7 +67,7 @@ namespace Kafka.Client.Messages
         /// Initializes the magic number as default and the checksum as null. It will be automatically computed.
         /// </remarks>
         public Message(byte[] payload)
-            : this(0L, TimestampTypes.NoTimestamp, payload, null, CompressionCodecs.NoCompressionCodec)
+            : this(NoTimestampValue, TimestampTypes.NoTimestamp, payload, null, CompressionCodecs.NoCompressionCodec)
         {
         }
 

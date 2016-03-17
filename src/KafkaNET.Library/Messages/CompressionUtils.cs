@@ -37,12 +37,12 @@ namespace Kafka.Client.Messages
 
         public static Message Compress(IEnumerable<Message> messages, int partition)
         {
-            return Compress(messages, CompressionCodecs.DefaultCompressionCodec, partition, Message.NoTimestampValue);
+            return Compress(messages, CompressionCodecs.DefaultCompressionCodec, partition);
         }
 
         public static Message Compress(IEnumerable<Message> messages, CompressionCodecs compressionCodec, int partition)
         {
-            return Compress(messages, compressionCodec, partition);
+            return Compress(messages, compressionCodec, partition, Message.NoTimestampValue);
         }
 
         public static Message Compress(IEnumerable<Message> messages, CompressionCodecs compressionCodec, int partition, long wrapperMessageTimestamp)
