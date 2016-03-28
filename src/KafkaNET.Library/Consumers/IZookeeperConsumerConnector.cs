@@ -17,6 +17,7 @@
 
 namespace Kafka.Client.Consumers
 {
+    using Kafka.Client.Serialization;
     using System.Collections.Generic;
 
     public interface IZookeeperConsumerConnector : IConsumerConnector
@@ -26,6 +27,8 @@ namespace Kafka.Client.Consumers
         void AutoCommit();
 
         string GetConsumerIdString();
+
+        IDictionary<string, IList<IKafkaMessageStream<TData>>> CreateMessageStreams<TData>(IDictionary<string, int> topicCountDict, IDecoder<TData> decoder);
 
         IDictionary<string, IDictionary<int, PartitionTopicInfo>> GetCurrentOwnership();
 
