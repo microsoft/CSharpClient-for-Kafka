@@ -57,7 +57,7 @@ namespace Kafka.Client.Consumers
             this.iterator = new ConsumerIterator<TData>(topic, queue, consumerTimeoutMs, decoder, token);
         }
 
-        public IEnumerable<TData> GetCancellable(CancellationToken cancellationToken)
+        public IKafkaMessageStream<TData> GetCancellable(CancellationToken cancellationToken)
         {
             return new KafkaMessageStream<TData>(this.topic, this.queue, this.consumerTimeoutMs, this.decoder, cancellationToken);
         }

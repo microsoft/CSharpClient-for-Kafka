@@ -24,7 +24,7 @@ namespace Kafka.Client.Consumers
     {
         IConsumerIterator<TData> iterator { get; }
         int Count { get; }
-        IEnumerable<TData> GetCancellable(CancellationToken cancellationToken);
+        IKafkaMessageStream<TData> GetCancellable(CancellationToken cancellationToken);
         void Clear();
     }
 }
