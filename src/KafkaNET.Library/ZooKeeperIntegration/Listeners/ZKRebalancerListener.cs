@@ -514,6 +514,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                     default:
                         throw new ConfigurationErrorsException("Wrong value in autoOffsetReset in ConsumerConfig");
                 }
+                offsetCommited = Math.Max(offset - 1, 0);
             }
             else
             {
