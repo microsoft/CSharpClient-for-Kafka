@@ -36,7 +36,7 @@ namespace Kafka.Client.Consumers
     /// <remarks>
     /// The iterator takes a shutdownCommand object which can be added to the queue to trigger a shutdown
     /// </remarks>
-    public class ConsumerIterator<TData> : IEnumerator<TData>
+    public class ConsumerIterator<TData> : IConsumerIterator<TData>
     {
         public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(ConsumerIterator<TData>));
 

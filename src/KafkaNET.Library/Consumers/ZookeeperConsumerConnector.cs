@@ -18,25 +18,20 @@
 namespace Kafka.Client.Consumers
 {
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Serialization;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
     using Kafka.Client.ZooKeeperIntegration.Listeners;
-    using log4net;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Net;
-    using System.Reflection;
+    using System.Linq;
 
     /// <summary>
     /// The consumer high-level API, that hides the details of brokers from the consumer. 
     /// It also maintains the state of what has been consumed. 
     /// </summary>
-    public class ZookeeperConsumerConnector : KafkaClientBase, IConsumerConnector
+    public class ZookeeperConsumerConnector : KafkaClientBase, IZookeeperConsumerConnector
     {
         public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(ZookeeperConsumerConnector));
         public static readonly int MaxNRetries = 4;
@@ -333,6 +328,15 @@ namespace Kafka.Client.Consumers
         {
             this.EnsuresNotDisposed();
             return this.Consume(topicCountDict, decoder);
+        }
+
+        IDictionary<string, IList<IKafkaMessageStream<TData>>> IZookeeperConsumerConnector.CreateMessageStreams<TData>(IDictionary<string, int> topicCountDict, IDecoder<TData> decoder)
+        {
+            return CreateMessageStreams(topicCountDict, decoder)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => (IList<IKafkaMessageStream<TData>>)kvp.Value.Cast<IKafkaMessageStream<TData>>().ToList()
+                );
         }
 
         public Dictionary<int, long> GetOffset(string topic)
