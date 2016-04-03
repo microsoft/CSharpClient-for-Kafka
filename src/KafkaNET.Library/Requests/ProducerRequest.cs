@@ -34,7 +34,7 @@ namespace Kafka.Client.Requests
     public class ProducerRequest : AbstractRequest, IWritable
     {
         public const int RandomPartition = -1;
-        public const short CurrentVersion = 2;
+        public const short CurrentVersion = 0;
         public const byte DefaultTopicSizeSize = 2;
         public const byte DefaultPartitionSize = 4;
         public const byte DefaultSetSizeSize = 4;

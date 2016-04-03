@@ -56,11 +56,11 @@ namespace Kafka.Client.Requests
         public const byte DefaultMinBytesSize = 4;
         public const byte DefaultOffsetInfoSizeSize = 4;
 
-        public const short CurrentVersion = 2;
+        public const short CurrentVersion = 0;
 
-        public FetchRequest(int correlationId, string clientId, int maxWait, int minBytes, Dictionary<string, List<PartitionFetchInfo>> fetchInfos)
+        public FetchRequest(short versionId, int correlationId, string clientId, int maxWait, int minBytes, Dictionary<string, List<PartitionFetchInfo>> fetchInfos)
         {
-            this.VersionId = CurrentVersion;
+            this.VersionId = versionId;
             this.CorrelationId = correlationId;
             this.ClientId = clientId;
             this.ReplicaId = -1;
@@ -70,6 +70,11 @@ namespace Kafka.Client.Requests
             int length = GetRequestLength();
             this.RequestBuffer = new BoundedBuffer(length);
             this.WriteTo(this.RequestBuffer);
+        }
+
+        public FetchRequest(int correlationId, string clientId, int maxWait, int minBytes, Dictionary<string, List<PartitionFetchInfo>> fetchInfos)
+            : this(CurrentVersion, correlationId, clientId, maxWait, minBytes, fetchInfos)
+        {
         }
 
         public int GetRequestLength()
