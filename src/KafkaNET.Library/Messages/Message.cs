@@ -410,21 +410,18 @@ namespace Kafka.Client.Messages
         /// <summary>
         /// Clean up attributes for message, otherwise there is double decompress at kafka broker side.
         /// </summary>
-        internal void CleanMagicAndAttributesBeforeCompress()
+        internal void CleanAttributesBeforeCompress()
         {
             this.Attributes = 0;
-            this.Magic = MagicValueV0;
         }
 
         /// <summary>
-        /// Restore the Magic and Attributes after compress.
+        /// Restore the Attributes after compress.
         /// </summary>
-        /// <param name="magic"></param>
         /// <param name="attributes"></param>
-        internal void RestoreMagicAndAttributesAfterCompress(byte magic, byte attributes)
+        internal void RestoreAttributesAfterCompress(byte attributes)
         {
             this.Attributes = attributes;
-            this.Magic = magic;
         }
 
         private uint ComputeChecksum(byte[] message, int offset, int count)

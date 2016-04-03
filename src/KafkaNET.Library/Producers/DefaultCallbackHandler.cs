@@ -444,9 +444,8 @@ namespace Kafka.Client.Producers
                         byte attributes = 0;
                         foreach (Message m in messages)
                         {
-                            magic = m.Magic;
                             attributes = m.Attributes;
-                            m.CleanMagicAndAttributesBeforeCompress();
+                            m.CleanAttributesBeforeCompress();
                         }
                         if (!this.producerConfig.CompressedTopics.Any() || this.producerConfig.CompressedTopics.Contains(topicAndPartition.Topic))
                         {
@@ -458,7 +457,7 @@ namespace Kafka.Client.Producers
                         }
                         foreach (Message m in messages)
                         {
-                            m.RestoreMagicAndAttributesAfterCompress(magic, attributes);
+                            m.RestoreAttributesAfterCompress(attributes);
                         }
                         break;
                 }
