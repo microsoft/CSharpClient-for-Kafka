@@ -50,9 +50,14 @@ namespace Kafka.Client.Responses
         public int CorrelationId { get; set; }
         public Dictionary<TopicAndPartition, ProducerResponseStatus> Statuses { get; set; }
 
+        public static Parser ParserForVersion(int versionId)
+        {
+            return new Parser(versionId);
+        }
+
         public class Parser : IResponseParser<ProducerResponse>
         {
-            private int versionId;
+            private readonly int versionId;
 
             public Parser(int versionId)
             {

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using Kafka.Client.Requests;
+
 namespace Kafka.Client.Tests.Response
 {
     using FluentAssertions;
@@ -24,7 +26,7 @@ namespace Kafka.Client.Tests.Response
             var stream = new MemoryStream();
             WriteTestFetchResponse(stream, 0);
             var reader = new KafkaBinaryReader(stream);
-            var response = new FetchResponse.Parser(0).ParseFrom(reader);
+            var response = FetchResponse.ParserForVersion(0).ParseFrom(reader);
             response.ThrottleTime.ShouldBeEquivalentTo(0);
             var set = response.MessageSet("topic1", 111);
             set.Should().NotBeNull();
@@ -40,7 +42,7 @@ namespace Kafka.Client.Tests.Response
             var stream = new MemoryStream();
             WriteTestFetchResponse(stream, 1);
             var reader = new KafkaBinaryReader(stream);
-            var response = new FetchResponse.Parser(1).ParseFrom(reader);
+            var response = FetchResponse.ParserForVersion(1).ParseFrom(reader);
             response.ThrottleTime.ShouldBeEquivalentTo(456);
             var set = response.MessageSet("topic1", 111);
             set.Should().NotBeNull();
@@ -54,7 +56,7 @@ namespace Kafka.Client.Tests.Response
             var writer = new KafkaBinaryWriter(stream);
             writer.Write(1);
             writer.Write(123); // correlation id
-            if (versionId > 0)
+            if (versionId > 0) // throttle time
             {
                writer.Write(456); 
             }

@@ -30,7 +30,7 @@ namespace Kafka.Client.Tests.Response
             writer.Write(111L); // offset
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new KafkaBinaryReader(stream);
-            var response = new ProducerResponse.Parser(1).ParseFrom(reader);
+            var response = ProducerResponse.ParserForVersion(1).ParseFrom(reader);
             response.CorrelationId.Should().Be(123);
             response.Statuses.Count.Should().Be(1);
             var info = response.Statuses[new TopicAndPartition("topic", 999)];

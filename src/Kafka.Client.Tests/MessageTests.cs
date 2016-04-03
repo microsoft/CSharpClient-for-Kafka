@@ -34,61 +34,72 @@ namespace Kafka.Client.Tests
     public class MessageTests
     {
         /// <summary>
-        /// Ensure that the bytes returned from the message are in valid kafka sequence.
+        /// Ensure that the bytes returned from the message are in valid kafka sequence for v0 messages.
         /// </summary>
         [TestMethod]
         [TestCategory(TestCategories.BVT)]
-        public void GetBytesValidSequence()
+        public void GetBytesValidSequenceV0Message()
         {
-            for (var i = 0; i < 2; i++)
+            RunBytesValidSequenceTest(false);
+        }
+
+        /// <summary>
+        /// Ensure that the bytes returned from the message are in valid kafka sequence for v1 messages.
+        /// </summary>
+        [TestMethod]
+        [TestCategory(TestCategories.BVT)]
+        public void GetBytesValidSequenceV1Message()
+        {
+            RunBytesValidSequenceTest(true);
+        }
+
+        private void RunBytesValidSequenceTest(bool includeTimestampInMessage)
+        {
+            var payload = Encoding.UTF8.GetBytes("kafka");
+            Message message;
+
+            if (includeTimestampInMessage)
             {
-                var useV0Message = i == 1;
-                var payload = Encoding.UTF8.GetBytes("kafka");
-                Message message;
+                message = new Message(payload, CompressionCodecs.NoCompressionCodec);
+            }
+            else
+            {
+                message = new Message(123L, TimestampTypes.CreateTime, payload, CompressionCodecs.NoCompressionCodec);
+            }
 
-                if (useV0Message)
+            MemoryStream ms = new MemoryStream();
+            message.WriteTo(ms);
+
+            Assert.AreEqual(message.Magic, includeTimestampInMessage ? 0 : 1);
+            Assert.AreEqual(message.Size, ms.Length);
+
+            var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int) (ms.Length - 4));
+
+            // first 4 bytes = the crc
+            using (var reader = new KafkaBinaryReader(ms))
+            {
+                Assert.AreEqual(crc, reader.ReadUInt32());
+
+                // magic
+                Assert.AreEqual(message.Magic, reader.ReadByte());
+
+                // attributes
+                Assert.AreEqual((byte) 0, reader.ReadByte());
+
+                if (!includeTimestampInMessage)
                 {
-                    message = new Message(payload, CompressionCodecs.NoCompressionCodec);
-                }
-                else
-                {
-                    message = new Message(123L, TimestampTypes.CreateTime, payload, CompressionCodecs.NoCompressionCodec);
+                    // timestamp
+                    Assert.AreEqual(123L, reader.ReadInt64());
                 }
 
-                MemoryStream ms = new MemoryStream();
-                message.WriteTo(ms);
+                // key size
+                Assert.AreEqual(-1, reader.ReadInt32());
 
-                Assert.AreEqual(message.Magic, useV0Message ? 0 : 1);
-                Assert.AreEqual(message.Size, ms.Length);
+                // payload size
+                Assert.AreEqual(payload.Length, reader.ReadInt32());
 
-                var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int) (ms.Length - 4));
-
-                // first 4 bytes = the crc
-                using (var reader = new KafkaBinaryReader(ms))
-                {
-                    Assert.AreEqual(crc, reader.ReadUInt32());
-
-                    // magic
-                    Assert.AreEqual(message.Magic, reader.ReadByte());
-
-                    // attributes
-                    Assert.AreEqual((byte) 0, reader.ReadByte());
-
-                    if (!useV0Message)
-                    {
-                        // timestamp
-                        Assert.AreEqual(123L, reader.ReadInt64());
-                    }
-
-                    // key size
-                    Assert.AreEqual(-1, reader.ReadInt32());
-
-                    // payload size
-                    Assert.AreEqual(payload.Length, reader.ReadInt32());
-
-                    // remaining bytes = the payload
-                    payload.SequenceEqual(reader.ReadBytes(10)).Should().BeTrue();
-                }
+                // remaining bytes = the payload
+                payload.SequenceEqual(reader.ReadBytes(10)).Should().BeTrue();
             }
         }
     }

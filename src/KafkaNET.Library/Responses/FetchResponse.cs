@@ -92,9 +92,14 @@ namespace Kafka.Client.Responses
             return new PartitionData(partition, new BufferedMessageSet(Enumerable.Empty<Message>(), partition));
         }
 
+        public static Parser ParserForVersion(int versionId)
+        {
+            return new Parser(versionId);
+        }
+
         public class Parser : IResponseParser<FetchResponse>
         {
-            private int versionId;
+            private readonly int versionId;
 
             public Parser(int versionId)
             {
