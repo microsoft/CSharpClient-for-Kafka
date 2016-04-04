@@ -247,7 +247,7 @@ namespace Kafka.Client.Consumers
                 currentTopicInfo = currentDataChunk.TopicInfo;
                 Logger.DebugFormat("CurrentTopicInfo: ConsumedOffset({0}), FetchOffset({1})",
                                     currentTopicInfo.ConsumeOffset, currentTopicInfo.FetchOffset);
-                if (currentTopicInfo.ConsumeOffset != currentDataChunk.FetchOffset)
+                if (currentTopicInfo.FetchOffset < currentDataChunk.FetchOffset)
                 {
                     Logger.ErrorFormat("consumed offset: {0} doesn't match fetch offset: {1} for {2}; consumer may lose data",
                         currentTopicInfo.ConsumeOffset,
