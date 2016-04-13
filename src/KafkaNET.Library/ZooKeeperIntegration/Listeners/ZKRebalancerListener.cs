@@ -42,6 +42,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
         public static log4net.ILog Logger = log4net.LogManager.GetLogger("ZKRebalancerListener");
 
         public event EventHandler ConsumerRebalance;
+        public event EventHandler<ConsumerRebalanceEventArgs> ConsumerRebalanceFinished;
 
         private IDictionary<string, IList<string>> oldPartitionsPerTopicMap = new Dictionary<string, IList<string>>();
         private IDictionary<string, IList<string>> oldConsumersPerTopicMap = new Dictionary<string, IList<string>>();
@@ -206,6 +207,18 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             }
         }
 
+        protected virtual void OnConsumerRebalanceFinished(ConsumerRebalanceEventArgs args)
+        {
+            try
+            {
+                ConsumerRebalanceFinished?.Invoke(this, args);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Exception occurred within event handler for ConsumerRebalanceFinished event: " + ex.Message);
+            }
+        }
+
         private void SyncedRebalance(CancellationTokenSource cancellationTokenSource)
         {
             Logger.InfoFormat("Consumer {0} has entered rebalance", consumerIdString);
@@ -251,6 +264,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 // Clear flag on exit to indicate rebalance has completed
                 isRebalanceRunning = false;
             }
+
+            OnConsumerRebalanceFinished(new ConsumerRebalanceEventArgs(topicRegistry.ToDictionary(t => t.Key, t => t.Value.Keys)));
 
             Logger.InfoFormat("Consumer {0} has exited rebalance", consumerIdString);
         }
