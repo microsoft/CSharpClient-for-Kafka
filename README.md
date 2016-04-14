@@ -1,4 +1,4 @@
-# Kafkanet
+# CSharpKafkaClient
 
 [![Join the chat at https://gitter.im/Microsoft/Kafkanet](https://badges.gitter.im/Microsoft/Kafkanet.svg)](https://gitter.im/Microsoft/Kafkanet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 .Net implementation of the Apache Kafka Protocol that provides basic functionality through Producer/Consumer classes. The project also offers balanced consumer implementation. 
@@ -9,8 +9,8 @@ The project is a fork from ExactTarget's Kafka-net Client.
 * [Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
 * [Kafka client protocol](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
 
-## Build Kafkanet
-* Clone Kafkanet through ```git clone https://github.com/Microsoft/Kafkanet.git```
+## Build CSharpKafkaClient
+* Clone CSharpKafkaClient through ```git clone https://github.com/Microsoft/CSharpKafkaClient.git```
 * Open `src\KafkaNETLibraryAndConsole.sln` in Visual Studio
 * Build Solution
 
@@ -56,7 +56,7 @@ kafkaProducer.Send(batch);
 ### Simple Consumer
 
 The simple Consumer allows full control for retrieving data. You could instantiate a Consumer directly by providing a ConsumerConfiguration and then calling Fetch.
-Kafkanet has a higher level wrapper around Consumer which allows consumer reuse and other benefits
+CSharpKafkaClient has a higher level wrapper around Consumer which allows consumer reuse and other benefits
 #### Consumer Usage
 
 ```c#
@@ -103,6 +103,6 @@ foreach (Message message in m_KafkaMessageStream.GetCancellable(cancellationToke
 
 ## Contribute
 
-Contributions to Kafkanet are welcome.  Here is how you can contribute to Kafkanet:
-* [Submit bugs](https://github.com/Microsoft/Kafkanet/issues) and help us verify fixes
-* [Submit pull requests](https://github.com/Microsoft/Kafkanet/pulls) for bug fixes and features and discuss existing proposals
+Contributions to CSharpKafkaClient are welcome.  Here is how you can contribute to CSharpKafkaClient:
+* [Submit bugs](https://github.com/Microsoft/CSharpKafkaClient/issues) and help us verify fixes
+* [Submit pull requests](https://github.com/Microsoft/CSharpKafkaClient/pulls) for bug fixes and features and discuss existing proposals
