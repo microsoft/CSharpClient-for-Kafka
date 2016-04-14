@@ -90,8 +90,8 @@ namespace Kafka.Client.Consumers
                             new FetchRequestBuilder().
                                 CorrelationId(reqId).
                                 ClientId(_config.ConsumerId ?? _name).
-                                MaxWait(0).
-                                MinBytes(0);
+                                MaxWait(_config.MaxFetchWaitMs).
+                                MinBytes(_config.FetchMinBytes);
                         fetchablePartitionTopicInfos.ForEach(pti => builder.AddFetch(pti.Topic, pti.PartitionId, pti.NextRequestOffset, _config.FetchSize));
 
                         FetchRequest fetchRequest = builder.Build();

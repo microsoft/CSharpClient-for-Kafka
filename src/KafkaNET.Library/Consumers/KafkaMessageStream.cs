@@ -27,13 +27,13 @@ namespace Kafka.Client.Consumers
     /// <summary>
     /// This class is a thread-safe IEnumerable of <see cref="Message"/> that can be enumerated to get messages.
     /// </summary>
-    public class KafkaMessageStream<TData> : IEnumerable<TData>
+    public class KafkaMessageStream<TData> : IKafkaMessageStream<TData>
     {
         private readonly BlockingCollection<FetchedDataChunk> queue;
 
         private readonly int consumerTimeoutMs;
 
-        public ConsumerIterator<TData> iterator { get; private set; }
+        public IConsumerIterator<TData> iterator { get; private set; }
 
         private string topic;
 
@@ -57,7 +57,7 @@ namespace Kafka.Client.Consumers
             this.iterator = new ConsumerIterator<TData>(topic, queue, consumerTimeoutMs, decoder, token);
         }
 
-        public IEnumerable<TData> GetCancellable(CancellationToken cancellationToken)
+        public IKafkaMessageStream<TData> GetCancellable(CancellationToken cancellationToken)
         {
             return new KafkaMessageStream<TData>(this.topic, this.queue, this.consumerTimeoutMs, this.decoder, cancellationToken);
         }
