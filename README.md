@@ -4,6 +4,8 @@
 .Net implementation of the Apache Kafka Protocol that provides basic functionality through Producer/Consumer classes. The project also offers balanced consumer implementation. 
 The project is a fork from ExactTarget's Kafka-net Client.
 
+Transitioning name from Kafkanet.
+
 ## Related documentation
 * [Kafka documentation](https://kafka.apache.org/documentation.html)
 * [Zookeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
