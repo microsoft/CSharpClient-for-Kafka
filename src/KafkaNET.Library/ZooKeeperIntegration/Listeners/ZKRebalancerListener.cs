@@ -496,34 +496,19 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             }
             var leader = leaderOpt.Value;
             var znode = topicDirs.ConsumerOffsetDir + "/" + partition;
-            var offsetString = this.zkClient.ReadData<string>(znode, true);
+
+            var offsetCommitedString = this.zkClient.ReadData<string>(znode, true);
 
             //if first time starting a consumer, set the initial offset based on the config
-            long offset = 0;
-            long offsetCommited = 0;
-            if (offsetString == null)
+            long offset = -1;
+            long offsetCommited = -1;
+            if (offsetCommitedString != null)
             {
-                switch (config.AutoOffsetReset)
-                {
-                    case OffsetRequest.SmallestTime:
-                        offset = this.EarliestOrLatestOffset(topic, leader, partitionId, OffsetRequest.EarliestTime);
-                        break;
-                    case OffsetRequest.LargestTime:
-                        offset = this.EarliestOrLatestOffset(topic, leader, partitionId, OffsetRequest.LatestTime);
-                        break;
-                    default:
-                        throw new ConfigurationErrorsException("Wrong value in autoOffsetReset in ConsumerConfig");
-                }
-                offsetCommited = Math.Max(offset - 1, 0);
+                offsetCommited = long.Parse(offsetCommitedString);
+                offset = offsetCommited + 1;
             }
-            else
-            {
-                offsetCommited = long.Parse(offsetString);
-                long latestOffset = this.EarliestOrLatestOffset(topic, leader, partitionId, OffsetRequest.LatestTime);
-                offset = Math.Min(offsetCommited + 1, latestOffset);
-                Logger.InfoFormat("Final offset {0} for topic {1} partition {2} OffsetCommited {3} latestOffset {4}"
-                    , offset, topic, partition, offsetCommited, latestOffset);
-            }
+            Logger.InfoFormat("Final offset {0} for topic {1} partition {2} OffsetCommited {3}"
+                    , offset, topic, partition, offsetCommited);
 
             var queue = this.queues[new Tuple<string, string>(topic, consumerThreadId)];
             var partTopicInfo = new PartitionTopicInfo(
@@ -538,32 +523,6 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 offsetCommited);
             partTopicInfoMap[partitionId] = partTopicInfo;
             Logger.InfoFormat("{0} selected new offset {1}", partTopicInfo, offset);
-        }
-
-        private long EarliestOrLatestOffset(string topic, int brokerId, int partitionId, long earliestIoLatest)
-        {
-            Consumer consumer = null;
-            long producedOffset = -1;
-            try
-            {
-                var cluster = new Cluster(this.zkClient);
-                var broker = cluster.GetBroker(brokerId);
-                if (broker == null)
-                {
-                    throw new IllegalStateException(string.Format("Broker {0} is unavailable. Cannot issue GetOffsetsBefore request", brokerId));
-                }
-                consumer = new Consumer(this.config, broker.Host, broker.Port);
-                var requestInfos = new Dictionary<string, List<PartitionOffsetRequestInfo>>();
-                requestInfos[topic] = new List<PartitionOffsetRequestInfo>() { new PartitionOffsetRequestInfo(partitionId, earliestIoLatest, 1) };
-                var offsets = consumer.GetOffsetsBefore(new OffsetRequest(requestInfos));
-
-                producedOffset = offsets.ResponseMap[topic].First().Offsets[0];
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorFormat("error in EarliestOrLatestOffset() : {0}", ex.FormatException());
-            }
-            return producedOffset;
         }
 
         private void ReleasePartitionOwnership(IDictionary<string, IList<string>> topicThreadIdsMap)

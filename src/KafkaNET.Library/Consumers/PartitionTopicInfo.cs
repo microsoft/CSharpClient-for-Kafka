@@ -232,8 +232,8 @@ namespace Kafka.Client.Consumers
 
                 Logger.InfoFormat("{2} : Updating fetch offset = {0} with value = {1}", this.fetchedOffset, offset, this.PartitionId);
                 this.chunkQueue.Add(new FetchedDataChunk(messages, this, this.fetchedOffset));
-                long newOffset = Interlocked.Exchange(ref this.fetchedOffset, offset);
-                Logger.Debug("Updated fetch offset of " + this + " to " + newOffset);
+                Interlocked.Exchange(ref this.fetchedOffset, offset);
+                Logger.Debug("Updated fetch offset of " + this + " to " + offset);
             }
 
             return size;

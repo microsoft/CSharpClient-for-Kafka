@@ -56,7 +56,7 @@ namespace Kafka.Client.Requests
         public const byte DefaultMinBytesSize = 4;
         public const byte DefaultOffsetInfoSizeSize = 4;
 
-        public const short CurrentVersion = 1;
+        public const short CurrentVersion = 0;
 
         public FetchRequest(int correlationId, string clientId, int maxWait, int minBytes, Dictionary<string, List<PartitionFetchInfo>> fetchInfos)
         {
