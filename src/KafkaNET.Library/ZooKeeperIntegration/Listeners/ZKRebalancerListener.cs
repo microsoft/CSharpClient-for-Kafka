@@ -501,14 +501,12 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
 
             //if first time starting a consumer, set the initial offset based on the config
             long offset = -1;
-            long offsetCommited = -1;
             if (offsetCommitedString != null)
             {
-                offsetCommited = long.Parse(offsetCommitedString);
-                offset = offsetCommited + 1;
+                offset = long.Parse(offsetCommitedString);
             }
-            Logger.InfoFormat("Final offset {0} for topic {1} partition {2} OffsetCommited {3}"
-                    , offset, topic, partition, offsetCommited);
+            Logger.InfoFormat("Final offset {0} for topic {1} partition {2}."
+                    , offset, topic, partition);
 
             var queue = this.queues[new Tuple<string, string>(topic, consumerThreadId)];
             var partTopicInfo = new PartitionTopicInfo(
@@ -516,11 +514,11 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 leader,
                 partitionId,
                 queue,
-                offsetCommited,
+                offset,
                 offset,
                 offset,
                 this.config.FetchSize,
-                offsetCommited);
+                offset);
             partTopicInfoMap[partitionId] = partTopicInfo;
             Logger.InfoFormat("{0} selected new offset {1}", partTopicInfo, offset);
         }
