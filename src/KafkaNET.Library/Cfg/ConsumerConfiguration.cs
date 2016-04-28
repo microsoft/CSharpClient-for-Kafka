@@ -45,6 +45,12 @@ namespace Kafka.Client.Cfg
         //fetch.message.max.bytes
         public const int DefaultFetchSize = 11 * 1024 * 1024;
 
+        //fetch.min.bytes
+        public const int DefaultFetchMinBytes = 1;
+
+        //fetch.wait.max.ms
+        public const int DefaultMaxFetchWaitMs = 100;
+
         public const int DefaultMaxFetchFactor = 10;
 
         public const int DefaultBackOffIncrement = 1000;
@@ -54,9 +60,9 @@ namespace Kafka.Client.Cfg
         //socket.receive.buffer.bytes
         public const int DefaultBufferSize = 11 * 1024 * 1024;
 
-        public const int DefaultSendTimeout = 5*1000;
+        public const int DefaultSendTimeout = 5 * 1000;
 
-        public const int DefaultReceiveTimeout = 5*1000;
+        public const int DefaultReceiveTimeout = 5 * 1000;
 
         public const int DefaultReconnectInterval = 60 * 1000;
 
@@ -79,6 +85,8 @@ namespace Kafka.Client.Cfg
             this.AutoCommit = DefaultAutoCommit;
             this.AutoCommitInterval = DefaultAutoCommitInterval;
             this.FetchSize = DefaultFetchSize;
+            this.FetchMinBytes = DefaultFetchMinBytes;
+            this.MaxFetchWaitMs = DefaultMaxFetchWaitMs;
             this.MaxFetchFactor = DefaultMaxFetchFactor;
             this.BackOffIncrement = DefaultBackOffIncrement;
             this.ConsumerId = GetHostName();
@@ -124,7 +132,7 @@ namespace Kafka.Client.Cfg
             this.ShutdownTimeout = config.ShutdownTimeout;
             this.MaxFetchBufferLength = config.MaxFetchBufferLength;
             this.ConsumeGroupRebalanceRetryIntervalMs = DefaultConsumeGroupRebalanceRetryIntervalMs;
-            this.ConsumeGroupFindNewLeaderSleepIntervalMs = ConsumeGroupFindNewLeaderSleepIntervalMs;
+            this.ConsumeGroupFindNewLeaderSleepIntervalMs = DefaultConsumeGroupFindNewLeaderSleepIntervalMs;
             if (config.Broker.ElementInformation.IsPresent)
             {
                 this.SetBrokerConfiguration(config.Broker);
@@ -225,6 +233,20 @@ namespace Kafka.Client.Cfg
         public int FetchSize { get; set; }
 
         /// <summary>
+        /// fetch.min.bytes -
+        /// The minimum amount of data the server should return for a fetch request. If insufficient data is available the request will wait for that much data to accumulate before answering the request.
+        /// Default value: 1
+        /// </summary>
+        public int FetchMinBytes { get; set; }
+
+        /// <summary>
+        /// fetch.wait.max.ms -
+        /// The maximum amount of time the server will block before answering the fetch request if there isn't sufficient data to immediately satisfy fetch.min.bytes.
+        /// Default value: 100
+        /// </summary>
+        public int MaxFetchWaitMs { get; set; }
+
+        /// <summary>
         /// Consumer Group API only. Zookeeper
         /// </summary>
         public ZooKeeperConfiguration ZooKeeper { get; set; }
@@ -280,7 +302,7 @@ namespace Kafka.Client.Cfg
         /// Consumer Group API only.  the time of sleep when no data to fetch. in milliseconds.
         /// Default value: 1000
         /// </summary>
-        public int BackOffIncrement { get; set; }       
+        public int BackOffIncrement { get; set; }
 
         /// <summary>
         /// Consumer group only. 
@@ -296,7 +318,7 @@ namespace Kafka.Client.Cfg
             {
                 //append ticks, so that consumerId is unqique, but sequential
                 //non-unique consumerId may lead to issues, when broker loses connection and restores it
-                consumerId = value +"_" + DateTime.UtcNow.Ticks;
+                consumerId = value + "_" + DateTime.UtcNow.Ticks;
             }
         }
         private string consumerId;
@@ -311,7 +333,7 @@ namespace Kafka.Client.Cfg
         /// Consumer group only.
         /// Default value: 2000ms
         /// </summary>
-        public int ConsumeGroupFindNewLeaderSleepIntervalMs { get; set; }      
+        public int ConsumeGroupFindNewLeaderSleepIntervalMs { get; set; }
 
         #endregion
 

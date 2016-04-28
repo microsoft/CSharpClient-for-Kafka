@@ -36,7 +36,7 @@ namespace Kafka.Client.Consumers
     /// <remarks>
     /// The iterator takes a shutdownCommand object which can be added to the queue to trigger a shutdown
     /// </remarks>
-    public class ConsumerIterator<TData> : IEnumerator<TData>
+    public class ConsumerIterator<TData> : IConsumerIterator<TData>
     {
         public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(ConsumerIterator<TData>));
 
@@ -247,7 +247,7 @@ namespace Kafka.Client.Consumers
                 currentTopicInfo = currentDataChunk.TopicInfo;
                 Logger.DebugFormat("CurrentTopicInfo: ConsumedOffset({0}), FetchOffset({1})",
                                     currentTopicInfo.ConsumeOffset, currentTopicInfo.FetchOffset);
-                if (currentTopicInfo.ConsumeOffset != currentDataChunk.FetchOffset)
+                if (currentTopicInfo.FetchOffset < currentDataChunk.FetchOffset)
                 {
                     Logger.ErrorFormat("consumed offset: {0} doesn't match fetch offset: {1} for {2}; consumer may lose data",
                         currentTopicInfo.ConsumeOffset,

@@ -316,7 +316,7 @@ namespace Kafka.Client.Messages
                 return AllDone();
             }
 
-            Message newMessage = this.Messages.ToList()[topIterPosition];
+            Message newMessage = this.Messages.ElementAt(topIterPosition);
             lastMessageSize = newMessage.Size;
             topIterPosition++;
             switch (newMessage.CompressionCodec)

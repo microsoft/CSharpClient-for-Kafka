@@ -4,9 +4,9 @@ We invite you to become part of this project, regardless of your skill set or av
 
 Contribute
 ----------
-Contributions to Kafkanet are welcome.  Here is how you can contribute to Kafkanet:
-* [Submit bugs](https://github.com/Microsoft/Kafkanet/issues) and help us verify fixes
-* [Submit pull requests](https://github.com/Microsoft/Kafkanet/pulls) for bug fixes and features and discuss existing proposals
+Contributions to CSharpClient-for-Kafka are welcome.  Here is how you can contribute to CSharpClient-for-Kafka:
+* [Submit bugs](https://github.com/Microsoft/CSharpClient-for-Kafka/issues) and help us verify fixes
+* [Submit pull requests](https://github.com/Microsoft/CSharpClient-for-Kafka/pulls) for bug fixes and features and discuss existing proposals
 
 Contribution License Agreement
 ------------------------------
