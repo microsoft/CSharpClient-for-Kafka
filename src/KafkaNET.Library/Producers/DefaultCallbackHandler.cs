@@ -168,7 +168,7 @@ namespace Kafka.Client.Producers
                         foreach (var topic in failedTopicResponse.ReturnVal.Select(e => e.Item1.Topic).Distinct())
                         {
                             // update the metadata in case that the failure caused by kafka broker failover
-                            this.brokerPartitionInfo.UpdateInfo(producerConfig.VersionId, NextCorrelationId,
+                            this.brokerPartitionInfo.UpdateInfo(producerConfig.TopicMetadataVersionId, NextCorrelationId,
                                 producerConfig.ClientId, topic);
                         }
 
@@ -212,7 +212,8 @@ namespace Kafka.Client.Producers
                 }
                 if (messagesPerTopic.Any())
                 {
-                    var producerRequest = new ProducerRequest(NextCorrelationId,
+                    var producerRequest = new ProducerRequest(producerConfig.ProducerRequestVersionId,
+                                                              NextCorrelationId,
                                                               this.producerConfig.ClientId,
                                                               this.producerConfig.RequiredAcks,
                                                               this.producerConfig.AckTimeout,
@@ -382,7 +383,7 @@ namespace Kafka.Client.Producers
             }
             else if (this.producerConfig.TotalNumPartitions == 0)
             {
-                topicPartitionsList = this.brokerPartitionInfo.GetBrokerPartitionInfo(producerConfig.VersionId,
+                topicPartitionsList = this.brokerPartitionInfo.GetBrokerPartitionInfo(producerConfig.TopicMetadataVersionId,
                     producerConfig.ClientId, NextCorrelationId, pd.Topic);
             }
             else
@@ -440,14 +441,14 @@ namespace Kafka.Client.Producers
                             new BufferedMessageSet(CompressionCodecs.NoCompressionCodec, messages, topicAndPartition.PartitionId));
                         break;
                     default:
-                        byte magic = 0;
-                        byte attributes = 0;
-                        foreach (Message m in messages)
+                        byte compressionAttributes = 0;
+
+                        foreach (var m in messages)
                         {
-                            magic = m.Magic;
-                            attributes = m.Attributes;
-                            m.CleanMagicAndAttributesBeforeCompress();
+                            compressionAttributes |= m.CompressionAttributes;
+                            m.CleanCompressionAttributes();
                         }
+
                         if (!this.producerConfig.CompressedTopics.Any() || this.producerConfig.CompressedTopics.Contains(topicAndPartition.Topic))
                         {
                             messagesPerTopicPartition.Add(topicAndPartition, new BufferedMessageSet(this.producerConfig.CompressionCodec, messages, topicAndPartition.PartitionId));
@@ -456,10 +457,11 @@ namespace Kafka.Client.Producers
                         {
                             messagesPerTopicPartition.Add(topicAndPartition, new BufferedMessageSet(CompressionCodecs.NoCompressionCodec, messages, topicAndPartition.PartitionId));
                         }
-                        foreach (Message m in messages)
+                        foreach (var m in messages)
                         {
-                            m.RestoreMagicAndAttributesAfterCompress(magic, attributes);
+                            m.RestoreCompressionAttributes(compressionAttributes);
                         }
+
                         break;
                 }
             }

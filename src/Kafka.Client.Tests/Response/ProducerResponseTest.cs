@@ -28,14 +28,18 @@ namespace Kafka.Client.Tests.Response
             writer.Write(999); // partition id
             writer.Write((short)ErrorMapping.NoError); // error
             writer.Write(111L); // offset
+            writer.Write(432L); // timestamp
+            writer.Write(567); // throttletime
             stream.Seek(0, SeekOrigin.Begin);
             var reader = new KafkaBinaryReader(stream);
-            var response = new ProducerResponse.Parser().ParseFrom(reader);
+            var response = ProducerResponse.ParserForVersion(2).ParseFrom(reader);
             response.CorrelationId.Should().Be(123);
             response.Statuses.Count.Should().Be(1);
             var info = response.Statuses[new TopicAndPartition("topic", 999)];
             info.Error.Should().Be(ErrorMapping.NoError);
             info.Offset.Should().Be(111L);
+            info.Timestamp.Should().Be(432L);
+            info.ThrottleTime.Should().Be(567);
         }
     }
 }

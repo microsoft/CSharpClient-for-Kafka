@@ -34,21 +34,46 @@ namespace Kafka.Client.Tests
     public class MessageTests
     {
         /// <summary>
-        /// Ensure that the bytes returned from the message are in valid kafka sequence.
+        /// Ensure that the bytes returned from the message are in valid kafka sequence for v0 messages.
         /// </summary>
         [TestMethod]
         [TestCategory(TestCategories.BVT)]
-        public void GetBytesValidSequence()
+        public void GetBytesValidSequenceV0Message()
+        {
+            RunBytesValidSequenceTest(false);
+        }
+
+        /// <summary>
+        /// Ensure that the bytes returned from the message are in valid kafka sequence for v1 messages.
+        /// </summary>
+        [TestMethod]
+        [TestCategory(TestCategories.BVT)]
+        public void GetBytesValidSequenceV1Message()
+        {
+            RunBytesValidSequenceTest(true);
+        }
+
+        private void RunBytesValidSequenceTest(bool includeTimestampInMessage)
         {
             var payload = Encoding.UTF8.GetBytes("kafka");
-            Message message = new Message(payload, CompressionCodecs.NoCompressionCodec);
+            Message message;
+
+            if (includeTimestampInMessage)
+            {
+                message = new Message(123L, TimestampTypes.CreateTime, payload, CompressionCodecs.NoCompressionCodec);
+            }
+            else
+            {
+                message = new Message(payload, CompressionCodecs.NoCompressionCodec);
+            }
 
             MemoryStream ms = new MemoryStream();
             message.WriteTo(ms);
 
+            Assert.AreEqual(message.Magic, includeTimestampInMessage ? 1 : 0);
             Assert.AreEqual(message.Size, ms.Length);
 
-            var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int)(ms.Length - 4));
+            var crc = Crc32Hasher.ComputeCrcUint32(ms.GetBuffer(), 4, (int) (ms.Length - 4));
 
             // first 4 bytes = the crc
             using (var reader = new KafkaBinaryReader(ms))
@@ -59,7 +84,13 @@ namespace Kafka.Client.Tests
                 Assert.AreEqual(message.Magic, reader.ReadByte());
 
                 // attributes
-                Assert.AreEqual((byte)0, reader.ReadByte());
+                Assert.AreEqual((byte) 0, reader.ReadByte());
+
+                if (includeTimestampInMessage)
+                {
+                    // timestamp
+                    Assert.AreEqual(123L, reader.ReadInt64());
+                }
 
                 // key size
                 Assert.AreEqual(-1, reader.ReadInt32());
@@ -71,6 +102,5 @@ namespace Kafka.Client.Tests
                 payload.SequenceEqual(reader.ReadBytes(10)).Should().BeTrue();
             }
         }
-
     }
 }

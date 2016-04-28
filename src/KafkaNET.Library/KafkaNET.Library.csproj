@@ -141,8 +141,8 @@
     <DefineConstants>TRACE;NET45</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -156,8 +156,8 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="ZooKeeperNet, Version=3.4.6.1, Culture=neutral, PublicKeyToken=fefd2c046da35b56, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZooKeeper.Net.3.4.6.2\lib\net40\ZooKeeperNet.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\ZooKeeperNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +173,8 @@
     <Compile Include="Consumers\IConsumerIterator.cs" />
     <Compile Include="Consumers\IKafkaMessageStream.cs" />
     <Compile Include="Consumers\IZookeeperConsumerConnector.cs" />
+    <Compile Include="Messages\TimestampType.cs" />
+    <Compile Include="Messages\TimestampTypes.cs" />
     <Compile Include="ZooKeeperIntegration\Events\ChildChangedEventItem.cs" />
     <Compile Include="ZooKeeperIntegration\Events\DataChangedEventItem.cs" />
     <Compile Include="ZooKeeperIntegration\Events\ZooKeeperChildChangedEventArgs.cs" />

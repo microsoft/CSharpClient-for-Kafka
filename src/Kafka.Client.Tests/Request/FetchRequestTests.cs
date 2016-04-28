@@ -43,6 +43,7 @@ namespace Kafka.Client.Tests.Request
         [TestCategory(TestCategories.BVT)]
         public void GetBytesValidStructure()
         {
+            short fetchVersionId = 2;
             string topicName = "topic";
             int correlationId = 1;
             string clientId = "TestClient";
@@ -54,7 +55,7 @@ namespace Kafka.Client.Tests.Request
             requestMap[topicName] = new List<PartitionFetchInfo>() {new PartitionFetchInfo(2, 4000, 777)};
 
 
-            var request = new FetchRequest(correlationId, clientId, maxWait, minBytes, requestMap);
+            var request = new FetchRequest(fetchVersionId, correlationId, clientId, maxWait, minBytes, requestMap);
 
 
             int requestSize = 4 + //request size
@@ -86,7 +87,7 @@ namespace Kafka.Client.Tests.Request
                             BitConverter.ToInt16(BitWorks.ReverseBytes(bytes.Skip(4).Take(2).ToArray<byte>()), 0));
 
             // next 2 bytes = the version id
-            Assert.AreEqual((short) FetchRequest.CurrentVersion,
+            Assert.AreEqual((short) fetchVersionId,
                             BitConverter.ToInt16(BitWorks.ReverseBytes(bytes.Skip(6).Take(2).ToArray<byte>()), 0));
 
             // next 2 bytes = the correlation id

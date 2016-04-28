@@ -109,7 +109,7 @@ namespace Kafka.Client.Consumers
 
         #region Fetch
 
-        public FetchResponse Fetch(string clientId, string topic, int correlationId, int partitionId, long fetchOffset, int fetchSize
+        public FetchResponse Fetch(short versionId, string clientId, string topic, int correlationId, int partitionId, long fetchOffset, int fetchSize
             , int maxWaitTime, int minWaitSize)
         {
             var requestMap = new Dictionary<string, List<PartitionFetchInfo>>();
@@ -123,12 +123,20 @@ namespace Kafka.Client.Consumers
                                 fetchSize)
                         });
             return this.Fetch(new FetchRequest(
+                versionId,
                 correlationId,
                 clientId,
                 maxWaitTime,
                 minWaitSize,
                 requestMap));
         }
+
+        public FetchResponse Fetch(string clientId, string topic, int correlationId, int partitionId, long fetchOffset, int fetchSize
+            , int maxWaitTime, int minWaitSize)
+        {
+            return Fetch(FetchRequest.CurrentVersion, clientId, topic, correlationId, partitionId, fetchOffset, fetchSize, maxWaitTime, minWaitSize);
+        }
+
         public FetchResponse Fetch(FetchRequest request)
         {
             short tryCounter = 1;
