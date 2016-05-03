@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Microsoft.CSharpClient-for-Kafka</id>
-    <version>1.0.0.0</version>
+    <version>$version$</version>
     <authors>Microsoft Corporation</authors>
     <owners>Microsoft Corporation</owners>
     <licenseUrl>https://github.com/Microsoft/CSharpClient-for-Kafka/blob/master/LICENSE.txt</licenseUrl>
@@ -13,7 +13,7 @@
     <copyright>Copyright (c) Microsoft. All rights reserved. Licensed under the Apache License, Version 2.0. See LICENSE file in the project root for full license information.</copyright>
     <tags>.Net C# Kafka Kafkanet Client</tags>
 	<dependencies>
-		<dependency id="log4net" version="1.2.10" />
+		<dependency id="log4net" version="2.0.5" />
 		<dependency id="ZooKeeper.Net" version="3.4.6.2" />
 	</dependencies>
   </metadata>
