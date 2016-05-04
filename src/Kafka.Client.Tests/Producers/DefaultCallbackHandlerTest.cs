@@ -111,5 +111,61 @@ namespace Kafka.Client.Tests.Producers
 
             Assert.Fail("Should have caught exception.");
         }
+
+        [TestMethod]
+        [TestCategory(TestCategories.BVT)]
+        public void ShouldReturnOffset()
+        {
+            var partitioner = new Mock<IPartitioner<string>>();
+            var config = new ProducerConfiguration(new List<BrokerConfiguration>());
+            var pool = new Mock<ISyncProducerPool>();
+            var producer = new Mock<ISyncProducer>();
+            var partitionMetadatas = new List<PartitionMetadata>()
+            {
+                new PartitionMetadata(0, new Broker(0, "host1", 1234), Enumerable.Empty<Broker>(),
+                    Enumerable.Empty<Broker>())
+            };
+            var metadatas = new List<TopicMetadata>() { new TopicMetadata("test", partitionMetadatas, ErrorMapping.NoError) };
+            producer.SetupGet(p => p.Config)
+                    .Returns(
+                        () =>
+                            new SyncProducerConfiguration(new ProducerConfiguration(new List<BrokerConfiguration>()), 0,
+                                "host1", 1234));
+            producer.Setup(p => p.Send(It.IsAny<TopicMetadataRequest>())).Returns(() => metadatas);
+            var statuses = new Dictionary<TopicAndPartition, ProducerResponseStatus>();
+            var producerResponseStatus = new ProducerResponseStatus()
+            {
+                PartitionId = 0,
+                Topic = "test",
+                Offset = 1,
+                Error = ErrorMapping.NoError
+            };
+            statuses[new TopicAndPartition("test", 0)] = producerResponseStatus;
+            producer.Setup(p => p.Send(It.IsAny<ProducerRequest>()))
+                    .Returns(
+                        () =>
+                            new ProducerResponse(1, statuses));
+            pool.Setup(p => p.GetShuffledProducers()).Returns(() => new List<ISyncProducer>() { producer.Object });
+            pool.Setup(p => p.GetProducer(It.IsAny<int>())).Returns(() => producer.Object);
+            var mockPartitionInfo = new Mock<IBrokerPartitionInfo>();
+            mockPartitionInfo.Setup(m => m.GetBrokerPartitionInfo(0, string.Empty, It.IsAny<int>(), "test"))
+                             .Returns(() => new List<Partition>());
+            var handler = new DefaultCallbackHandler<string, Message>(config, partitioner.Object, new DefaultEncoder(), mockPartitionInfo.Object, pool.Object);
+            List<ProducerResponseStatus> producerResponse;
+            try
+            {
+                producerResponse = handler.Handle(new List<ProducerData<string, Message>>()
+                {
+                    new ProducerData<string, Message>("test", new Message(new byte[100]))
+                });
+            }
+            catch (FailedToSendMessageException<string>)
+            {
+                mockPartitionInfo.Verify(m => m.GetBrokerPartitionInfo(0, string.Empty, It.IsAny<int>(), "test"), Times.Exactly(3));
+                return;
+            }
+
+            Assert.AreEqual(1, producerResponse.FirstOrDefault().Offset);
+        }
     }
 }

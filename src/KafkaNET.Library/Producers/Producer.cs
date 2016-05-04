@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+using Kafka.Client.Responses;
+
 namespace Kafka.Client.Producers
 {
     using Kafka.Client.Cfg;
@@ -70,14 +72,14 @@ namespace Kafka.Client.Producers
         /// Sends the data to a multiple topics, partitioned by key
         /// </summary>
         /// <param name="data">The producer data objects that encapsulate the topic, key and message data.</param>
-        public void Send(IEnumerable<ProducerData<TKey, TData>> data)
+        public List<ProducerResponseStatus> Send(IEnumerable<ProducerData<TKey, TData>> data)
         {
             Guard.NotNull(data, "data");
             Guard.CheckBool(data.Any(), true, "data.Any()");
 
             this.EnsuresNotDisposed();
 
-            this.callbackHandler.Handle(data);
+            return this.callbackHandler.Handle(data);
         }
 
         /// <summary>

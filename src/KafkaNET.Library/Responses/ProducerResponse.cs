@@ -25,6 +25,8 @@ namespace Kafka.Client.Responses
     {
         public ErrorMapping Error { get; set; }
         public long Offset { get; set; }
+        public string Topic { get; set; }
+        public int PartitionId { get; set; }
         public override string ToString()
         {
             return string.Format("Error:{0} Offset:{1}", this.Error, this.Offset);
@@ -59,13 +61,16 @@ namespace Kafka.Client.Responses
                     {
                         var partitionId = reader.ReadInt32();
                         var error = reader.ReadInt16();
+                        //only returns first message offset per Topic and Partition pair
                         var offset = reader.ReadInt64();
                         var topicAndPartition = new TopicAndPartition(topic, partitionId);
 
                         statuses.Add(topicAndPartition, new ProducerResponseStatus()
                         {
                             Error = ErrorMapper.ToError(error),
-                            Offset = offset
+                            Offset = offset,
+                            Topic = topic,
+                            PartitionId = partitionId
                         });
 
                     }

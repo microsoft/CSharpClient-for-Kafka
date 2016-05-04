@@ -67,12 +67,14 @@ namespace Kafka.Client.Producers
             get { return Interlocked.Increment(ref correlationId); }
         }
 
-        public void Handle(IEnumerable<ProducerData<TK, TV>> events)
+        public List<ProducerResponseStatus> Handle(IEnumerable<ProducerData<TK, TV>> events)
         {
             IEnumerable<ProducerData<TK, Message>> serializedData = this.Serialize(events);
             ProduceDispatchSeralizeResult<TK> outstandingProduceRequests = new ProduceDispatchSeralizeResult<TK>(new List<Exception> { }, serializedData, null, true);
             var remainingRetries = this.producerConfig.ProducerRetries;
             int currentRetryMs = producerConfig.ProducerRetryExponentialBackoffMinMs;
+            //new up master list of ProducerResponseStatus to return
+            List<ProducerResponseStatus> producerResponseStatuses = new List<ProducerResponseStatus>();
 
             var brokers = this.producerConfig.Brokers;
             if (producerConfig.Verbose)
@@ -86,6 +88,8 @@ namespace Kafka.Client.Producers
                 {
                     ProduceDispatchSeralizeResult<TK> currentOutstandingRequests =
                         this.DispatchSerializedData(outstandingProduceRequests.FailedProducerDatas, remainingRetries > 1 ? false : true);
+                    //Add producerResponseStatuses to response master list
+                    producerResponseStatuses.AddRange(currentOutstandingRequests.ProducerResponse);
                     outstandingProduceRequests = currentOutstandingRequests;
                     if (outstandingProduceRequests.HasDataNeedDispatch)
                     {
@@ -121,6 +125,7 @@ namespace Kafka.Client.Producers
                 Logger.Error(message);
                 throw new FailedToSendMessageException<TK>(message, new List<Exception>(), outstandingProduceRequests, allCount, remainFailedCount);
             }
+            return producerResponseStatuses;
         }
 
         private int ExponentialRetry(int currentRetryMs)
@@ -141,8 +146,10 @@ namespace Kafka.Client.Producers
             List<Tuple<int, TopicAndPartition, ProducerResponseStatus>> failedDetail = null;
             var exceptions = new List<Exception>();
             bool hasDataNeedReprocess = false;
+            //new up master list of ProducerResponseStatus to add to ProduceDispatchSerializeResult constructor
+            List<ProducerResponseStatus> producerResponseStatuses = new List<ProducerResponseStatus>();
             try
-            {
+            {                
                 IEnumerable<KeyValuePair<int, Dictionary<TopicAndPartition, List<ProducerData<TK, Message>>>>> partitionedData = this.PartitionAndCollate(messages);
                 foreach (KeyValuePair<int, Dictionary<TopicAndPartition, List<ProducerData<TK, Message>>>> keyValuePair in partitionedData)
                 {
@@ -154,37 +161,47 @@ namespace Kafka.Client.Producers
                         Logger.DebugFormat("ProducerDispatchSeralizeResult,brokerId={0},partitionData.Count={1}", brokerId, partitionedData.Count());
                     }
 
-                    ProducerSendResult<IEnumerable<Tuple<TopicAndPartition, ProducerResponseStatus>>> failedTopicResponse = this.Send(brokerId, messageSetPerBroker);
-                    if (!failedTopicResponse.Success || (failedTopicResponse.ReturnVal != null && failedTopicResponse.ReturnVal.Any()))
+                    //Get topic responses from send method
+                    ProducerSendResult<IEnumerable<Tuple<TopicAndPartition, ProducerResponseStatus>>> topicResponse = this.Send(brokerId, messageSetPerBroker);
+
+                    if (topicResponse?.ReturnVal != null)
                     {
-                        failedProduceRequests = new List<ProducerData<TK, Message>>();
-                        foreach (var failedTopic in failedTopicResponse.ReturnVal)
-                        {
-                            List<ProducerData<TK, Message>> failedMessages = eventsPerBrokerMap[failedTopic.Item1];
-                            failedProduceRequests.AddRange(failedMessages);
-                            hasDataNeedReprocess = true;
-                        }
+                        //New up list of topics to ensure we do not updateInfo on the same topic more than once
+                        var topics = new List<string>();
+                        failedDetail = new List<Tuple<int, TopicAndPartition, ProducerResponseStatus>>();
 
-                        foreach (var topic in failedTopicResponse.ReturnVal.Select(e => e.Item1.Topic).Distinct())
+                        //Use a single for each to do proper error handling and retries and add the topicResponseStatus to the master list
+                        foreach (var topicResponseStatus in topicResponse?.ReturnVal)
                         {
-                            // update the metadata in case that the failure caused by kafka broker failover
-                            this.brokerPartitionInfo.UpdateInfo(producerConfig.VersionId, NextCorrelationId,
-                                producerConfig.ClientId, topic);
-                        }
-
-                        if (lastRetry)
-                        {
-                            failedDetail = new List<Tuple<int, TopicAndPartition, ProducerResponseStatus>>();
-                            foreach (var failedTopic in failedTopicResponse.ReturnVal)
+                            if (topicResponseStatus.Item2.Error != ErrorMapping.NoError)
                             {
-                                failedDetail.Add(new Tuple<int, TopicAndPartition, ProducerResponseStatus>(brokerId, failedTopic.Item1, failedTopic.Item2));
-                            }
+                                failedProduceRequests = new List<ProducerData<TK, Message>>();
+
+                                List<ProducerData<TK, Message>> failedMessages = eventsPerBrokerMap[topicResponseStatus.Item1];
+                                failedProduceRequests.AddRange(failedMessages);
+                                hasDataNeedReprocess = true;
+
+                                //If not in list of topics whose metadata has already been updated
+                                if (!topics.Contains(topicResponseStatus.Item1.Topic))
+                                {
+                                    // update the metadata in case that the failure caused by kafka broker failover
+                                    this.brokerPartitionInfo.UpdateInfo(producerConfig.VersionId, NextCorrelationId,
+                                    producerConfig.ClientId, topicResponseStatus.Item1.Topic);
+                                    topics.Add(topicResponseStatus.Item1.Topic);
+                                }
+
+                                if (lastRetry)
+                                {
+                                    failedDetail.Add(new Tuple<int, TopicAndPartition, ProducerResponseStatus>(brokerId, topicResponseStatus.Item1, topicResponseStatus.Item2));
+                                }                                
+                            }      
+                            //Add ProducerResponseStatus to master list                      
+                            producerResponseStatuses.Add(topicResponseStatus.Item2);
                         }
                     }
-                    if (failedTopicResponse.Exception != null)
-                        exceptions.Add(failedTopicResponse.Exception);
 
-
+                    if (topicResponse?.Exception != null)
+                        exceptions.Add(topicResponse.Exception);
                 }
             }
             catch (Exception)
@@ -193,7 +210,7 @@ namespace Kafka.Client.Producers
                 throw;
             }
 
-            return new ProduceDispatchSeralizeResult<TK>(exceptions, failedProduceRequests, failedDetail, hasDataNeedReprocess);
+            return new ProduceDispatchSeralizeResult<TK>(exceptions, failedProduceRequests, failedDetail, hasDataNeedReprocess, producerResponseStatuses);
         }
         /// <summary>
         /// Send message of one broker.
@@ -268,8 +285,7 @@ namespace Kafka.Client.Producers
                             sb.Append(string.Join(",", response.Statuses.Where(r => r.Value.Error != (short)ErrorMapping.NoError).Select(r => r.ToString())));
                             throw new FailedToSendMessageException<TK>(sb.ToString());
                         }
-                        return new ProducerSendResult<IEnumerable<Tuple<TopicAndPartition, ProducerResponseStatus>>>(response.Statuses.Where(s => s.Value.Error != (short)ErrorMapping.NoError)
-                            .Select(s => new Tuple<TopicAndPartition, ProducerResponseStatus>(s.Key, s.Value)));
+                        return new ProducerSendResult<IEnumerable<Tuple<TopicAndPartition, ProducerResponseStatus>>>(response.Statuses.Select(s => new Tuple<TopicAndPartition, ProducerResponseStatus>(s.Key, s.Value)));
                     }
                 }
             }
