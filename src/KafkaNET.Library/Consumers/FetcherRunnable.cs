@@ -221,5 +221,13 @@ namespace Kafka.Client.Consumers
 
             return offsetFound;
         }
+
+        ~FetcherRunnable()
+        {
+            if (_simpleConsumer != null)
+            {
+                _simpleConsumer.Dispose();
+            }
+        }
     }
 }
