@@ -171,7 +171,7 @@ namespace Kafka.Client.Producers
                         failedDetail = new List<Tuple<int, TopicAndPartition, ProducerResponseStatus>>();
 
                         //Use a single for each to do proper error handling and retries and add the topicResponseStatus to the master list
-                        foreach (var topicResponseStatus in topicResponse?.ReturnVal)
+                        foreach (var topicResponseStatus in topicResponse.ReturnVal)
                         {
                             if (topicResponseStatus.Item2.Error != ErrorMapping.NoError)
                             {
