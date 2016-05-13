@@ -80,7 +80,8 @@ namespace Kafka.Client.Consumers
             {
                 try
                 {
-                    IEnumerable<PartitionTopicInfo> fetchablePartitionTopicInfos = _partitionTopicInfos.Where(pti => pti.NextRequestOffset - pti.ConsumeOffset < _fetchBufferLength);
+                    IEnumerable<PartitionTopicInfo> fetchablePartitionTopicInfos = _partitionTopicInfos
+                        .Where(pti => pti.NextRequestOffset - pti.ConsumeOffset < _fetchBufferLength || pti.ConsumedOffsetOutOfRange);
 
                     long read = 0;
 
@@ -105,6 +106,7 @@ namespace Kafka.Client.Consumers
                             switch (messages.ErrorCode)
                             {
                                 case (short)ErrorMapping.NoError:
+                                    partitionTopicInfo.ConsumedOffsetOutOfRange = false;
                                     int bytesRead = partitionTopicInfo.Add(messages);
                                     // TODO: The highwater offset on the message set is the end of the log partition. If the message retrieved is -1 of that offset, we are at the end.
                                     if (messages.Messages.Any())
@@ -126,8 +128,8 @@ namespace Kafka.Client.Consumers
                                         if (resetOffset >= 0)
                                         {
                                             partitionTopicInfo.FetchOffset = resetOffset;
-                                            partitionTopicInfo.ConsumeOffset = resetOffset;
-
+                                            partitionTopicInfo.ConsumedOffsetOutOfRange = true;
+                                            
                                             Logger.InfoFormat("{0} marked as done.", partitionTopicInfo);
                                         }
                                     }
