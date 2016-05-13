@@ -37,12 +37,14 @@ namespace Kafka.Client.Consumers
         private readonly object fetchedOffsetLock = new object();
         private readonly object messageOffsetLock = new object();
         private readonly object commitedOffsetLock = new object();
+        private readonly object consumedOffsetOutOfRangeLock = new object();
         private readonly BlockingCollection<FetchedDataChunk> chunkQueue;
         private long consumedOffset;
         private long fetchedOffset;
         private long messageOffset;
         private bool consumedOffsetValid = true;
         private long commitedOffset;
+        private bool consumedOffsetOutOfRangeFlag = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartitionTopicInfo"/> class.
@@ -217,6 +219,39 @@ namespace Kafka.Client.Consumers
 
         // Gets or sets the offset for the next request.
         public long NextRequestOffset { get; internal set; }
+
+        public bool ConsumedOffsetOutOfRange
+        {
+            get
+            {
+                lock(consumedOffsetOutOfRangeLock)
+                {
+                    return this.consumedOffsetOutOfRangeFlag;
+                }
+            }
+            internal set
+            {
+                lock (consumedOffsetOutOfRangeLock)
+                {
+                    this.consumedOffsetOutOfRangeFlag = value;
+
+                    if (this.consumedOffsetOutOfRangeFlag)
+                    {
+                        // Clear the chunkQueue as current messages in the queue are invalid on brokers. Drop them in order to fetch valid messages in.
+                        while (this.chunkQueue.Count > 0)
+                        {
+                            FetchedDataChunk item = null;
+                            this.chunkQueue.TryTake(out item);
+                        }
+                        Logger.Info("Clearing the current data chunk due to consumedoffset out of range.");
+                    }
+                }
+                if (Logger.IsDebugEnabled)
+                {
+                    Logger.DebugFormat("set consumed offset out of range value to be {0}. {1}.", value, this);
+                }
+            }
+        }
 
         /// <summary>
         /// Ads a message set to the queue
