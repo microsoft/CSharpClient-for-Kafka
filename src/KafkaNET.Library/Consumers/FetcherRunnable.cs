@@ -80,7 +80,7 @@ namespace Kafka.Client.Consumers
             {
                 try
                 {
-                    IEnumerable<PartitionTopicInfo> fetchablePartitionTopicInfos = _partitionTopicInfos.Where(pti => pti.NextRequestOffset - pti.ConsumeOffset < _fetchBufferLength);
+                    IEnumerable<PartitionTopicInfo> fetchablePartitionTopicInfos = _partitionTopicInfos.Where(pti => pti.GetMessagesCount() < _fetchBufferLength);
 
                     long read = 0;
 
@@ -125,9 +125,7 @@ namespace Kafka.Client.Consumers
                                                                                 partitionTopicInfo.PartitionId);
                                         if (resetOffset >= 0)
                                         {
-                                            partitionTopicInfo.FetchOffset = resetOffset;
-                                            partitionTopicInfo.ConsumeOffset = resetOffset;
-
+                                            partitionTopicInfo.ResetOffset(resetOffset);
                                             Logger.InfoFormat("{0} marked as done.", partitionTopicInfo);
                                         }
                                     }
