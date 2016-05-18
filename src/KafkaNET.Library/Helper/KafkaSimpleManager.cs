@@ -188,7 +188,7 @@ namespace Kafka.Client.Helper
             catch (Exception ex)
             {
                 Logger.WarnFormat("Got exception while refreshing metadata of topic {0}, {1} ",topic, ExceptionUtil.GetExceptionDetailInfo(ex));
-                // Calling RecreateSyncProducerPoolForMetadata 
+                // Calling RecreateSyncProducerPoolForMetadata to get a fresh list of broker used for metadata call
                 RecreateSyncProducerPoolForMetadata ();
                 throw;
             }   
