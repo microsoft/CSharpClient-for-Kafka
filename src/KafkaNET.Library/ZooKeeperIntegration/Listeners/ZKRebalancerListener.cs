@@ -518,7 +518,6 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 queue,
                 offsetCommited,
                 offset,
-                offset,
                 this.config.FetchSize,
                 offsetCommited);
             partTopicInfoMap[partitionId] = partTopicInfo;

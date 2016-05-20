@@ -35,14 +35,14 @@ namespace Kafka.Client.Consumers
         public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(PartitionTopicInfo));
         private readonly object consumedOffsetLock = new object();
         private readonly object fetchedOffsetLock = new object();
-        private readonly object messageOffsetLock = new object();
         private readonly object commitedOffsetLock = new object();
         private readonly BlockingCollection<FetchedDataChunk> chunkQueue;
         private long consumedOffset;
         private long fetchedOffset;
-        private long messageOffset;
+        private long lastKnownGoodNextRequestOffset;
         private bool consumedOffsetValid = true;
         private long commitedOffset;
+        private long nextRequestOffset;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartitionTopicInfo"/> class.
@@ -75,7 +75,6 @@ namespace Kafka.Client.Consumers
             BlockingCollection<FetchedDataChunk> chunkQueue,
             long consumedOffset,
             long fetchedOffset,
-            long messageOffset,
             int fetchSize,
             long commitedOffset)
         {
@@ -87,14 +86,12 @@ namespace Kafka.Client.Consumers
             this.fetchedOffset = fetchedOffset;
             this.NextRequestOffset = fetchedOffset;
             this.FetchSize = fetchSize;
-            this.messageOffset = messageOffset;
             this.commitedOffset = commitedOffset;
             if (Logger.IsDebugEnabled)
             {
                 Logger.DebugFormat("initial CommitedOffset  of {0} is {1}", this, commitedOffset);
                 Logger.DebugFormat("initial consumer offset of {0} is {1}", this, consumedOffset);
                 Logger.DebugFormat("initial fetch offset of {0} is {1}", this, fetchedOffset);
-                Logger.DebugFormat("initial messageOffset offset of {0} is {1}", this, messageOffset);
             }
         }
 
@@ -215,9 +212,47 @@ namespace Kafka.Client.Consumers
             }
         }
 
-        // Gets or sets the offset for the next request.
-        public long NextRequestOffset { get; internal set; }
+        /// <summary>
+        /// It happens when it gets consumer offset out of range exception. Try to fix the offset.
+        /// </summary>        
+        internal void ResetOffset(long resetOffset)
+        {
+            lock(this.fetchedOffsetLock)
+            {
+                /// Save the old fetchoffset as lastKnownGoodNextRequestOffset in order to caculate how many actual messages are left in the queue
+                /// Reset the fetchedoffset and nextrequestoffset to where it should be.
+                this.lastKnownGoodNextRequestOffset = this.nextRequestOffset;
+                this.fetchedOffset = resetOffset;
+                this.nextRequestOffset = resetOffset;
+            }
 
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.DebugFormat("Set lastKnownGoodNextRequestOffset to {0}. {1}", this.lastKnownGoodNextRequestOffset, this);
+            }
+        }
+
+        internal long GetMessagesCount()
+        {
+            return this.lastKnownGoodNextRequestOffset - this.ConsumeOffset;
+        }
+        
+        // Gets or sets the offset for the next request.
+        public long NextRequestOffset
+        {
+            get
+            {
+                return this.nextRequestOffset;
+            }
+            internal set
+            {
+                this.nextRequestOffset = value;
+
+                // keep lastKnownGoodNextRequestOffset in sync with nextRequestOffset in normal case
+                this.lastKnownGoodNextRequestOffset = value;
+            }
+        }
+        
         /// <summary>
         /// Ads a message set to the queue
         /// </summary>
