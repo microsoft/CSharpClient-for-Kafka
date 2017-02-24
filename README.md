@@ -1,9 +1,9 @@
 # Note
 This library was created for Kafka 0.8 with an intention to have a native library built from scratch.
 With Kafka protocol getting updated frequently with new features (which is expected until it reaches version 1.0), it doesn't seem beneficial to maintain a library built from scratch.
-The right approach (and as suggested by Confluent) for now would be to use a C# wrapper around the [librdkafka](https://github.com/edenhill/librdkafka) C-Library, which the [rdkafka-dontnet](https://github.com/ah-/rdkafka-dotnet) is doing.
+The right approach (and as suggested by Confluent) for now would be to use a C# wrapper around the [librdkafka](https://github.com/edenhill/librdkafka) C-Library, which the [confluent-kafka-dotnet](https://github.com/confluentinc/confluent-kafka-dotnet) client is doing.
 
-So, if you are using Kafka 0.9 or higher, please move to using the [rdkafka-dontnet](https://github.com/ah-/rdkafka-dotnet) client library.
+So, if you are using Kafka 0.9 or higher, please move to using the [confluent-kafka-dotnet](https://github.com/confluentinc/confluent-kafka-dotnet) client library.
 
 # CSharpClient-for-Kafka
 
