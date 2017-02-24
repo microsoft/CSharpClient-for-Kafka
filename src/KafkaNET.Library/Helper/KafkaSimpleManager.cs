@@ -177,31 +177,46 @@ namespace Kafka.Client.Helper
             Logger.InfoFormat("RefreshMetadata enter: {0} {1} {2} Topic:{3} Force:{4}", versionId, clientId, correlationId, topic, force);
             if (!force && this.TopicMetadatas.ContainsKey(topic))
                 return this.TopicMetadatas[topic];
-
+            int maxRetryCount = 2;
             int retry = 0;
-            while (retry < 2)
+            while (retry < maxRetryCount)
             {
                 Dictionary<string, TopicMetadata> tempTopicMetadatas = new Dictionary<string, TopicMetadata>();
                 Dictionary<string, DateTime> tempTopicMetadatasLastUpdateTime = new Dictionary<string, DateTime>();
                 Dictionary<int, Tuple<Broker, BrokerConfiguration>> partitionLeaders = new Dictionary<int, Tuple<Broker, BrokerConfiguration>>();
-                RefreshMetadataInternal(versionId, clientId, correlationId, topic, tempTopicMetadatas, tempTopicMetadatasLastUpdateTime, partitionLeaders);
-
-                if (tempTopicMetadatas.ContainsKey(topic))
+                try 
                 {
-                    this.TopicMetadatas[topic] = tempTopicMetadatas[topic];
-                    this.TopicMetadatasLastUpdateTime[topic] = tempTopicMetadatasLastUpdateTime[topic];
-                    this.TopicMetadataPartitionsLeaders[topic] = partitionLeaders;
-                    int partitionCountInZK = GetTopicPartitionsFromZK(topic).Count;
-                    if (partitionCountInZK != partitionLeaders.Count)
-                        Logger.WarnFormat("RefreshMetadata exit return. Some partitions has no leader.  Topic:{0}  PartitionMetadata:{1} partitionLeaders:{2} != partitionCountInZK:{3}", topic, tempTopicMetadatas[topic].PartitionsMetadata.Count(), partitionLeaders.Count, partitionCountInZK);
+                    RefreshMetadataInternal(versionId, clientId, correlationId, topic, tempTopicMetadatas, tempTopicMetadatasLastUpdateTime, partitionLeaders);
+    
+                    if (tempTopicMetadatas.ContainsKey(topic))
+                    {
+                        this.TopicMetadatas[topic] = tempTopicMetadatas[topic];
+                        this.TopicMetadatasLastUpdateTime[topic] = tempTopicMetadatasLastUpdateTime[topic];
+                        this.TopicMetadataPartitionsLeaders[topic] = partitionLeaders;
+                        int partitionCountInZK = GetTopicPartitionsFromZK(topic).Count;
+                        if (partitionCountInZK != partitionLeaders.Count)
+                            Logger.WarnFormat("RefreshMetadata exit return. Some partitions has no leader.  Topic:{0}  PartitionMetadata:{1} partitionLeaders:{2} != partitionCountInZK:{3}", topic, tempTopicMetadatas[topic].PartitionsMetadata.Count(), partitionLeaders.Count, partitionCountInZK);
+                        else
+                            Logger.InfoFormat("RefreshMetadata exit return. Topic:{0}  PartitionMetadata:{1} partitionLeaders:{2} partitionCountInZK:{3}", topic, tempTopicMetadatas[topic].PartitionsMetadata.Count(), partitionLeaders.Count, partitionCountInZK);
+                        return this.TopicMetadatas[topic];
+                    }
                     else
-                        Logger.InfoFormat("RefreshMetadata exit return. Topic:{0}  PartitionMetadata:{1} partitionLeaders:{2} partitionCountInZK:{3}", topic, tempTopicMetadatas[topic].PartitionsMetadata.Count(), partitionLeaders.Count, partitionCountInZK);
-                    return this.TopicMetadatas[topic];
+                    {
+                        Logger.WarnFormat("Got null for metadata of topic {0}, will RecreateSyncProducerPoolForMetadata and retry . ", topic);
+                        RecreateSyncProducerPoolForMetadata();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Logger.WarnFormat("Got null for metadata of topic {0}, will RecreateSyncProducerPoolForMetadata and retry . ", topic);
+                    Logger.WarnFormat("Got exception while refreshing metadata of topic {0}, will RecreateSyncProducerPoolForMetadata and retry . {1} ",topic,
+                     ,ExceptionUtil.GetExceptionDetailInfo(ex));
                     RecreateSyncProducerPoolForMetadata();
+                    retry++
+                    if (retry >= maxRetryCount)
+                    {
+                        throw ex;
+                    }
+                    continue;
                 }
                 retry++;
             }
@@ -241,7 +256,6 @@ namespace Kafka.Client.Helper
         private void RefreshMetadataInternal(short versionId, string clientId, int correlationId, string topic, Dictionary<string, TopicMetadata> tempTopicMetadatas, Dictionary<string, DateTime> tempTopicMetadatasLastUpdateTime, Dictionary<int, Tuple<Broker, BrokerConfiguration>> partitionLeaders)
         {
             Logger.InfoFormat("RefreshMetadataInternal enter: {0} {1} {2} Topic:{3} ", versionId, clientId, correlationId, topic);
-
             lock (syncProducerPoolForMetadataLock)
             {
                 BrokerPartitionInfo brokerPartitionInfo = new BrokerPartitionInfo(this.syncProducerPoolForMetaData, tempTopicMetadatas, tempTopicMetadatasLastUpdateTime, ProducerConfiguration.DefaultTopicMetaDataRefreshIntervalMS, this.syncProducerPoolForMetaData.zkClient);
