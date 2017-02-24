@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+using Kafka.Client.Messages;
+
 namespace Kafka.Client.Responses
 {
     using Kafka.Client.Serialization;
@@ -23,8 +25,14 @@ namespace Kafka.Client.Responses
 
     public class ProducerResponseStatus
     {
+        public ProducerResponseStatus()
+        {
+            this.Timestamp = Message.NoTimestampValue;
+        }
+
         public ErrorMapping Error { get; set; }
         public long Offset { get; set; }
+        public long Timestamp { get; set; }
         public override string ToString()
         {
             return string.Format("Error:{0} Offset:{1}", this.Error, this.Offset);
@@ -42,8 +50,20 @@ namespace Kafka.Client.Responses
         public int CorrelationId { get; set; }
         public Dictionary<TopicAndPartition, ProducerResponseStatus> Statuses { get; set; }
 
+        public static Parser ParserForVersion(int versionId)
+        {
+            return new Parser(versionId);
+        }
+
         public class Parser : IResponseParser<ProducerResponse>
         {
+            private readonly int versionId;
+
+            public Parser(int versionId)
+            {
+                this.versionId = versionId;
+            }
+
             public ProducerResponse ParseFrom(KafkaBinaryReader reader)
             {
                 var size = reader.ReadInt32();
@@ -60,12 +80,18 @@ namespace Kafka.Client.Responses
                         var partitionId = reader.ReadInt32();
                         var error = reader.ReadInt16();
                         var offset = reader.ReadInt64();
+                        var timestamp = Message.NoTimestampValue;
+                        if (versionId >= 2)
+                        {
+                            timestamp = reader.ReadInt64();
+                        }
                         var topicAndPartition = new TopicAndPartition(topic, partitionId);
 
                         statuses.Add(topicAndPartition, new ProducerResponseStatus()
                         {
                             Error = ErrorMapper.ToError(error),
-                            Offset = offset
+                            Offset = offset,
+                            Timestamp = timestamp
                         });
 
                     }

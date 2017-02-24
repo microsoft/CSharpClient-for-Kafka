@@ -34,7 +34,7 @@ namespace Kafka.Client.Tests
         public void CompressAndDecompressMessageUsingSnappyCompressionCodec()
         {
             var messageBytes = new byte[] { 1, 2, 3, 4, 5 };
-            var message = new Message(messageBytes,CompressionCodecs.SnappyCompressionCodec);
+            var message = new Message(messageBytes, CompressionCodecs.SnappyCompressionCodec);
             Message compressedMsg = CompressionUtils.Compress(new List<Message>() { message }, CompressionCodecs.SnappyCompressionCodec, 0);
             var decompressed = CompressionUtils.Decompress(compressedMsg, 0);
             int i = 0;
@@ -104,6 +104,23 @@ namespace Kafka.Client.Tests
             }
 
             Assert.AreEqual(3, i);
+        }
+
+        [TestMethod]
+        [TestCategory(TestCategories.BVT)]
+        public void DecompressWhenWrapperMessageProvidesLogWriteTimestamp()
+        {
+            byte[] messageBytes = new byte[] { 1, 2, 3, 4, 5 };
+            Message message1 = new Message(100L, TimestampTypes.CreateTime, messageBytes, CompressionCodecs.DefaultCompressionCodec);
+            Message compressedMsg = CompressionUtils.Compress(new List<Message>() { message1 }, CompressionCodecs.DefaultCompressionCodec, 0, 123L);
+
+            var decompressed = CompressionUtils.Decompress(compressedMsg, 0);
+
+            foreach (var decompressedMessage in decompressed.Messages)
+            {
+                decompressedMessage.TimestampType.ShouldBeEquivalentTo(TimestampTypes.LogAppendTime);
+                decompressedMessage.Timestamp.ShouldBeEquivalentTo(123L);
+            }
         }
 
         [TestMethod]

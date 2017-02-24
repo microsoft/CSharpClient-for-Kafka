@@ -46,6 +46,8 @@ namespace Kafka.Client.Tests.Request
             short requiredAcks = 5;
             int ackTimeout = 345;
 
+            short producerVersionId = 1;
+
             var partition = 2;
             short error = 0;
             var payload = Encoding.UTF8.GetBytes("testMessage");
@@ -55,7 +57,7 @@ namespace Kafka.Client.Tests.Request
 
             var topicData = new TopicData(topicName, new List<PartitionData>() { partitionData });
 
-            var request = new ProducerRequest(correlationId, clientId, requiredAcks, ackTimeout, new List<TopicData>() { topicData });
+            var request = new ProducerRequest(producerVersionId, correlationId, clientId, requiredAcks, ackTimeout, new List<TopicData>() { topicData });
 
             int requestSize = 2 + //request type id
                               2 + //versionId
@@ -86,7 +88,7 @@ namespace Kafka.Client.Tests.Request
             Assert.AreEqual((short)RequestTypes.Produce, BitConverter.ToInt16(BitWorks.ReverseBytes(bytes.Skip(4).Take(2).ToArray<byte>()), 0));
 
             // next 2 bytes = the version id
-            Assert.AreEqual((short)ProducerRequest.CurrentVersion, BitConverter.ToInt16(BitWorks.ReverseBytes(bytes.Skip(6).Take(2).ToArray<byte>()), 0));
+            Assert.AreEqual((short)producerVersionId, BitConverter.ToInt16(BitWorks.ReverseBytes(bytes.Skip(6).Take(2).ToArray<byte>()), 0));
 
             // next 2 bytes = the correlation id
             Assert.AreEqual(correlationId, BitConverter.ToInt32(BitWorks.ReverseBytes(bytes.Skip(8).Take(4).ToArray<byte>()), 0));
