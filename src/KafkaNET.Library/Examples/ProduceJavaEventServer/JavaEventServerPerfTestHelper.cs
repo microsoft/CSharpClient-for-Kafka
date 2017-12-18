@@ -274,6 +274,11 @@ namespace KafkaNET.Library.Examples
 
             internal bool PutMessage(byte[] key, byte[] val)
             {
+                if (val == null)
+                {
+                    return false;
+                }
+
                 if (key == null)
                 {
                     if (size + 8 + val.Length > limit) return false;
@@ -283,29 +288,17 @@ namespace KafkaNET.Library.Examples
                     if (size + 8 + key.Length + val.Length > limit) return false;
                 }
 
-                if (val == null)
+                if (key == null)
                 {
-                    return false;
+                    writer.Write(0);
                 }
-
-                try
+                else
                 {
-                    if (key == null)
-                    {
-                        writer.Write(0);
-                    }
-                    else
-                    {
-                        writer.Write(ReverseBytes((uint)key.Length));
-                        writer.Write(key);
-                    }
-                    writer.Write(ReverseBytes((uint)val.Length));
-                    writer.Write(val);
+                    writer.Write(ReverseBytes((uint)key.Length));
+                    writer.Write(key);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                writer.Write(ReverseBytes((uint)val.Length));
+                writer.Write(val);
 
                 if (key == null)
                 {
