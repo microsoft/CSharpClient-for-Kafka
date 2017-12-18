@@ -128,7 +128,7 @@ namespace KafkaNET.Library.Examples
         public string group;
         public string topic;
 
-        private DateTime startTime = DateTime.UtcNow;
+        private readonly DateTime startTime = DateTime.UtcNow;
         private SortedDictionary<int, long> latestOffsetDictLastValue = null;
         private SortedDictionary<int, long> latestCommitedDictLastValue = null;
         private SortedDictionary<int, long> latestOffsetDictFirstValue = null;

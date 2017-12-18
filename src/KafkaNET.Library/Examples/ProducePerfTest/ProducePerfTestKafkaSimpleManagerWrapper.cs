@@ -25,12 +25,12 @@ namespace KafkaNET.Library.Examples
         private static volatile ProducePerfTestKafkaSimpleManagerWrapper instance;
         private static object syncRoot = new Object();
 
-        private object lockForDictionaryChange = new Object();
+        private readonly object lockForDictionaryChange = new Object();
         private KafkaSimpleManagerConfiguration config;
         private KafkaSimpleManager<byte[], Message> kafkaSimpleManage;
-        private ProducerConfiguration producerConfigTemplate;
+        private readonly ProducerConfiguration producerConfigTemplate;
         private int correlationIDGetProducer = 0;
-        private string clientId = "KafkaSimpleManagerProducerWrapper";
+        private readonly string clientId = "KafkaSimpleManagerProducerWrapper";
 
         private ProducePerfTestKafkaSimpleManagerWrapper()
         {

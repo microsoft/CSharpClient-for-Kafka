@@ -35,9 +35,9 @@ namespace Kafka.Client.Consumers
 
         public IConsumerIterator<TData> iterator { get; private set; }
 
-        private string topic;
+        private readonly string topic;
 
-        private IDecoder<TData> decoder;
+        private readonly IDecoder<TData> decoder;
 
         internal KafkaMessageStream(string topic, BlockingCollection<FetchedDataChunk> queue, int consumerTimeoutMs, IDecoder<TData> decoder)
         {

@@ -12,7 +12,7 @@ namespace Kafka.Client.Exceptions
 
     public class TimeStampTooSmallException : Exception
     {
-        private long offsetTime;
+        private readonly long offsetTime;
 
 
         public TimeStampTooSmallException()

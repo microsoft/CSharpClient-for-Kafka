@@ -247,9 +247,9 @@ namespace KafkaNET.Library.Examples
 
         private class BatchedMessages : IDisposable
         {
-            MemoryStream stream;
-            BinaryWriter writer;
-            int limit = 0;
+            readonly MemoryStream stream;
+            readonly BinaryWriter writer;
+            readonly int limit = 0;
             int size = 0;
 
             bool _disposed;
@@ -363,8 +363,8 @@ namespace KafkaNET.Library.Examples
 
         private class Message
         {
-            byte[] key;
-            byte[] val;
+            readonly byte[] key;
+            readonly byte[] val;
 
             internal Message(byte[] key, byte[] val)
             {

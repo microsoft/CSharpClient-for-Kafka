@@ -43,9 +43,9 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
 
         public event EventHandler ConsumerRebalance;
 
-        private IDictionary<string, IList<string>> oldPartitionsPerTopicMap = new Dictionary<string, IList<string>>();
-        private IDictionary<string, IList<string>> oldConsumersPerTopicMap = new Dictionary<string, IList<string>>();
-        private IDictionary<string, IDictionary<int, PartitionTopicInfo>> topicRegistry;
+        private readonly IDictionary<string, IList<string>> oldPartitionsPerTopicMap = new Dictionary<string, IList<string>>();
+        private readonly IDictionary<string, IList<string>> oldConsumersPerTopicMap = new Dictionary<string, IList<string>>();
+        private readonly IDictionary<string, IDictionary<int, PartitionTopicInfo>> topicRegistry;
         private readonly IDictionary<Tuple<string, string>, BlockingCollection<FetchedDataChunk>> queues;
         private readonly string consumerIdString;
         private readonly object syncLock = new object();

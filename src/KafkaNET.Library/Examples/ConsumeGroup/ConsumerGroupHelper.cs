@@ -116,8 +116,8 @@ namespace KafkaNET.Library.Examples
         internal static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(ConsumerGroupHelperUnit));
         internal int ThreadID;
         internal ConsumerConfiguration configSettings;
-        ConsumeGroupHelperOptions cgOptions;
-        AutoResetEvent resetEvent;
+        readonly ConsumeGroupHelperOptions cgOptions;
+        readonly AutoResetEvent resetEvent;
         internal int Count = -1;
         internal int consumedTotalCount = 0;
         internal ConsumerGroupHelperUnit(int threadID, ConsumeGroupHelperOptions cg, AutoResetEvent e, int c)
