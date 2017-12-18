@@ -252,6 +252,8 @@ namespace KafkaNET.Library.Examples
             int limit = 0;
             int size = 0;
 
+            bool _disposed;
+
             internal BatchedMessages(int limit)
             {
                 this.stream = new MemoryStream(limit);
@@ -326,9 +328,13 @@ namespace KafkaNET.Library.Examples
 
             public void Dispose()
             {
-                if (stream != null)
-                    stream.Dispose();
-                this.Dispose();
+                if (!_disposed)
+                {
+                    if (stream != null)
+                        stream.Dispose();
+
+                    _disposed = true;
+                }
             }
 
             private uint ReverseBytes(uint value)
