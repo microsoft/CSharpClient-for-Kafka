@@ -78,7 +78,7 @@ namespace Kafka.Client.Consumers
         {
             if (string.IsNullOrEmpty(config.GroupId))
             {
-                throw new ArgumentNullException("GroupId of ConsumerConfiguration should not be empty.");
+                throw new ArgumentException("GroupId of ConsumerConfiguration should not be empty.", nameof(config));
             }
             Logger.Info("Enter ZookeeperConsumerConnector ...");
             try
@@ -555,7 +555,7 @@ namespace Kafka.Client.Consumers
 
             if (topicCountDict == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(topicCountDict));
             }
 
             var dirs = new ZKGroupDirs(this.config.GroupId);
