@@ -91,7 +91,7 @@ namespace Kafka.Client.Producers.Sync
             if (Config.ZooKeeper != null)
                 sb.AppendFormat("\t Broker zookeeper: {0} \t", this.Config.ZooKeeper.ZkConnect);
 
-            sb.Append(string.Join(",", this.syncProducers.Select(r => string.Format("BrokerID:{0} syncProducerCount:{1} ", r.Key, r.Value.Producers.Count())).ToArray()));
+            sb.Append(string.Join(",", this.syncProducers.Select(r => string.Format("BrokerID:{0} syncProducerCount:{1} ", r.Key, r.Value.Producers.Count)).ToArray()));
             return sb.ToString();
         }
         public void AddProducer(Broker broker)
