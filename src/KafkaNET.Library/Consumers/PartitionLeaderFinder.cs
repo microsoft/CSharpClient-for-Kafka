@@ -36,6 +36,10 @@ namespace Kafka.Client.Consumers
         private static readonly int FailureRetryDelayMs = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
 
         private const string clientId = "LeaderFetcher";
+        
+        private const short VersionId = 0;
+        
+        private const int CorrelationId = 0;
 
         private readonly Cluster _brokers;
 
@@ -77,7 +81,7 @@ namespace Kafka.Client.Consumers
                             var consumer = new Consumer(_config, broker.Value.Host, broker.Value.Port);
                             try
                             {
-                                IEnumerable<TopicMetadata> metaData = consumer.GetMetaData(TopicMetadataRequest.Create(new[] { partition.Topic }, 1, 0, clientId));
+                                IEnumerable<TopicMetadata> metaData = consumer.GetMetaData(TopicMetadataRequest.Create(new[] { partition.Topic }, VersionId, CorrelationId, clientId));
                                 if (metaData != null && metaData.Any())
                                 {
                                     PartitionMetadata newPartitionData = metaData.First().PartitionsMetadata.FirstOrDefault(p => p.PartitionId == partition.PartitionId);
