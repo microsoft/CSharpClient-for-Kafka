@@ -1,3 +1,5 @@
+## This project will be archived to be in read-only mode as no new development/maintenance is expected. Please look at the Note section below for alternate libraries.
+
 # Note
 This library was created for Kafka 0.8 with an intention to have a native library built from scratch.
 With Kafka protocol getting updated frequently with new features (which is expected until it reaches version 1.0), it doesn't seem beneficial to maintain a library built from scratch.
