@@ -16,6 +16,7 @@
  */
 
 using System.Collections.Generic;
+using Kafka.Client.Responses;
 
 namespace Kafka.Client.Producers
 {
@@ -36,7 +37,7 @@ namespace Kafka.Client.Producers
         /// synchronous or the asynchronous producer.
         /// </summary>
         /// <param name="data">The producer data objects that encapsulate the topic, key and message data.</param>
-        void Send(IEnumerable<ProducerData<TKey, TData>> data);
+        List<ProducerResponseStatus> Send(IEnumerable<ProducerData<TKey, TData>> data);
 
         /// <summary>
         /// Sends the data to a single topic, partitioned by key, using either the

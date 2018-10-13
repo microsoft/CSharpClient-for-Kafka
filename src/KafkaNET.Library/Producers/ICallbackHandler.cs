@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+using Kafka.Client.Responses;
+
 namespace Kafka.Client.Producers
 {
     using System;
@@ -30,6 +32,6 @@ namespace Kafka.Client.Producers
         /// <param name="events">
         /// The sent request events.
         /// </param>
-        void Handle(IEnumerable<ProducerData<K,V>> events);
+        List<ProducerResponseStatus> Handle(IEnumerable<ProducerData<K,V>> events);
     }
 }

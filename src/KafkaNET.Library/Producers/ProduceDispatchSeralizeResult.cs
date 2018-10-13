@@ -14,17 +14,19 @@ namespace Kafka.Client.Producers
     public class ProduceDispatchSeralizeResult<K>
     {
         public ProduceDispatchSeralizeResult(IEnumerable<Exception> exceptions,
-            IEnumerable<ProducerData<K, Message>> failedProducerDatas, List<Tuple<int, TopicAndPartition, ProducerResponseStatus>> failedDetail, bool hasDataNeedDispatch)
+            IEnumerable<ProducerData<K, Message>> failedProducerDatas, List<Tuple<int, TopicAndPartition, ProducerResponseStatus>> failedDetail, bool hasDataNeedDispatch, List<ProducerResponseStatus> producerResponse = null)
         {
             Exceptions = exceptions;
             FailedProducerDatas = failedProducerDatas;
             FailedDetail = failedDetail;
             this.HasDataNeedDispatch = hasDataNeedDispatch;
+            this.ProducerResponse = producerResponse ?? new List<ProducerResponseStatus>();
         }
 
         public IEnumerable<ProducerData<K, Message>> FailedProducerDatas { get; private set; }
         public IEnumerable<Exception> Exceptions { get; private set; }
         public List<Tuple<int, TopicAndPartition, ProducerResponseStatus>> FailedDetail { get; private set; }
         public bool HasDataNeedDispatch { get; private set; }
-    }
+        public List<ProducerResponseStatus> ProducerResponse { get; private set; }
+}
 }
