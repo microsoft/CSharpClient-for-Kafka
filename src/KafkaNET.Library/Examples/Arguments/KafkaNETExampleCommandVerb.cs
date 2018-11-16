@@ -24,9 +24,9 @@ namespace KafkaNET.Library.Examples
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} is one utility tool to try KafkaNET.Library.\r\n", AssemblyName);
-            sb.AppendFormat("Usage:\r\n", AssemblyName);
+            sb.Append("Usage:\r\n");
             sb.AppendFormat("{0}  <Verb>  ArgumentsAndOpitons \r\n", AssemblyName);
-            sb.AppendFormat("Valid verbs includes: \r\n\r\n");
+            sb.Append("Valid verbs includes: \r\n\r\n");
             sb.AppendFormat("\t{0,-30}  {1}\r\n\r\n", KafkaNETExampleType.Topic.ToString().ToLowerInvariant(), new TopicHelperArguments().GetUsage(true));
             sb.AppendFormat("\t{0,-30}  {1}\r\n\r\n", KafkaNETExampleType.ConsumeSimple.ToString().ToLowerInvariant(), new ConsumeDataHelperArguments().GetUsage(true));
             sb.AppendFormat("\t{0,-30}  {1}\r\n\r\n", KafkaNETExampleType.ConsumeGroup.ToString().ToLowerInvariant(), new ConsumeGroupMonitorHelperOptions().GetUsage(true));

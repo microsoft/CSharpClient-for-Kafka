@@ -311,7 +311,7 @@ namespace Kafka.Client.Messages
 
         private MessageAndOffset MakeNextOuter()
         {
-            if (topIterPosition >= this.Messages.Count())
+            if (!this.Messages.Skip(topIterPosition).Any())
             {
                 return AllDone();
             }

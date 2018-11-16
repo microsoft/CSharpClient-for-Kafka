@@ -13,8 +13,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
     {
         public static ILog Logger { get { return LogManager.GetLogger(typeof(ZkPartitionLeaderListener<TData>)); } }
 
-        private ZKRebalancerListener<TData> _rebalancer;
-        private Dictionary<string, int> _partitionLeaderMap;
+        private readonly ZKRebalancerListener<TData> _rebalancer;
+        private readonly Dictionary<string, int> _partitionLeaderMap;
 
         public ZkPartitionLeaderListener(ZKRebalancerListener<TData> rebalancer, Dictionary<string, int> partitionLeaderMap = null)
         {

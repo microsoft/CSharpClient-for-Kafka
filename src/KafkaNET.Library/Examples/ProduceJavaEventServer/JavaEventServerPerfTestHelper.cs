@@ -247,10 +247,12 @@ namespace KafkaNET.Library.Examples
 
         private class BatchedMessages : IDisposable
         {
-            MemoryStream stream;
-            BinaryWriter writer;
-            int limit = 0;
+            readonly MemoryStream stream;
+            readonly BinaryWriter writer;
+            readonly int limit = 0;
             int size = 0;
+
+            bool _disposed;
 
             internal BatchedMessages(int limit)
             {
@@ -272,6 +274,11 @@ namespace KafkaNET.Library.Examples
 
             internal bool PutMessage(byte[] key, byte[] val)
             {
+                if (val == null)
+                {
+                    return false;
+                }
+
                 if (key == null)
                 {
                     if (size + 8 + val.Length > limit) return false;
@@ -281,29 +288,17 @@ namespace KafkaNET.Library.Examples
                     if (size + 8 + key.Length + val.Length > limit) return false;
                 }
 
-                if (val == null)
+                if (key == null)
                 {
-                    return false;
+                    writer.Write(0);
                 }
-
-                try
+                else
                 {
-                    if (key == null)
-                    {
-                        writer.Write(0);
-                    }
-                    else
-                    {
-                        writer.Write(ReverseBytes((uint)key.Length));
-                        writer.Write(key);
-                    }
-                    writer.Write(ReverseBytes((uint)val.Length));
-                    writer.Write(val);
+                    writer.Write(ReverseBytes((uint)key.Length));
+                    writer.Write(key);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                writer.Write(ReverseBytes((uint)val.Length));
+                writer.Write(val);
 
                 if (key == null)
                 {
@@ -326,9 +321,13 @@ namespace KafkaNET.Library.Examples
 
             public void Dispose()
             {
-                if (stream != null)
-                    stream.Dispose();
-                this.Dispose();
+                if (!_disposed)
+                {
+                    if (stream != null)
+                        stream.Dispose();
+
+                    _disposed = true;
+                }
             }
 
             private uint ReverseBytes(uint value)
@@ -357,8 +356,8 @@ namespace KafkaNET.Library.Examples
 
         private class Message
         {
-            byte[] key;
-            byte[] val;
+            readonly byte[] key;
+            readonly byte[] val;
 
             internal Message(byte[] key, byte[] val)
             {

@@ -49,9 +49,9 @@ namespace Kafka.Client.Consumers
         private FetchedDataChunk currentDataChunk = null;
         private TData nextItem;
         private long consumedOffset = -1;
-        private SemaphoreSlim makeNextSemaphore = new SemaphoreSlim(1, 1);
-        private string topic;
-        private IDecoder<TData> decoder;
+        private readonly SemaphoreSlim makeNextSemaphore = new SemaphoreSlim(1, 1);
+        private readonly string topic;
+        private readonly IDecoder<TData> decoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsumerIterator"/> class.

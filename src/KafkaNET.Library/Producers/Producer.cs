@@ -45,7 +45,7 @@ namespace Kafka.Client.Producers
         private readonly object shuttingDownLock = new object();
         private readonly IDictionary<string, TopicMetadata> topicPartitionInfo = new Dictionary<string, TopicMetadata>();
         private readonly IDictionary<string, DateTime> topicPartitionInfoLastUpdateTime = new Dictionary<string, DateTime>();
-        private SyncProducerPool syncProducerPool;
+        private readonly SyncProducerPool syncProducerPool;
 
         public Producer(ICallbackHandler<TKey, TData> callbackHandler)
         {

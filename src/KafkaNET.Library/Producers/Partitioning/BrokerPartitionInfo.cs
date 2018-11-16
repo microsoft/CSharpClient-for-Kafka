@@ -42,7 +42,7 @@ namespace Kafka.Client.Producers.Partitioning
 
         private readonly IDictionary<string, DateTime> topicPartitionInfoLastUpdateTime = new Dictionary<string, DateTime>();
         private readonly object updateLock = new object();
-        private int topicMetaDataRefreshIntervalMS;
+        private readonly int topicMetaDataRefreshIntervalMS;
         private readonly ZooKeeperClient zkClient;
 
         public BrokerPartitionInfo(ISyncProducerPool syncProducerPool, IDictionary<string, TopicMetadata> cache, IDictionary<string, DateTime> lastUpdateTime, int topicMetaDataRefreshIntervalMS, ZooKeeperClient zkClient)

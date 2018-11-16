@@ -52,6 +52,9 @@ namespace Kafka.Client.Consumers
         private KafkaConnection connection;
 
         internal long CreatedTimeInUTC;
+
+        private readonly object _lockOp = new object();
+
         public ConsumerConfiguration Config
         {
             get
@@ -137,7 +140,7 @@ namespace Kafka.Client.Consumers
                 try
                 {
                     Logger.Debug("Fetch is waiting for send lock");
-                    lock (this)
+                    lock (_lockOp)
                     {
                         Logger.Debug("Fetch acquired send lock. Begin send");
                         return connection.Send(request);
@@ -212,7 +215,7 @@ namespace Kafka.Client.Consumers
             {
                 try
                 {
-                    lock (this)
+                    lock (_lockOp)
                     {
                         return connection.Send(request);
                     }
@@ -240,7 +243,7 @@ namespace Kafka.Client.Consumers
             {
                 try
                 {
-                    lock (this)
+                    lock (_lockOp)
                     {
                         return connection.Send(request);
                     }
@@ -273,7 +276,7 @@ namespace Kafka.Client.Consumers
             {
                 if (connection != null)
                 {
-                    lock (this)
+                    lock (_lockOp)
                     {
                         if (connection != null)
                         {

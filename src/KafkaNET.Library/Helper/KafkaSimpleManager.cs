@@ -65,30 +65,30 @@ namespace Kafka.Client.Helper
 
         public KafkaSimpleManagerConfiguration Config { get; private set; }
 
-        private ConcurrentDictionary<string, object> TopicLockProduce = new ConcurrentDictionary<string, object>();
-        private ConcurrentDictionary<string, object> TopicPartitionLockConsume = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> TopicLockProduce = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> TopicPartitionLockConsume = new ConcurrentDictionary<string, object>();
         //topic -->  TopicMetadata
-        private ConcurrentDictionary<string, TopicMetadata> TopicMetadatas = new ConcurrentDictionary<string, TopicMetadata>();
+        private readonly ConcurrentDictionary<string, TopicMetadata> TopicMetadatas = new ConcurrentDictionary<string, TopicMetadata>();
         //topic -->  TopicMetadatasLastUpdateTime
-        private ConcurrentDictionary<string, DateTime> TopicMetadatasLastUpdateTime = new ConcurrentDictionary<string, DateTime>();
+        private readonly ConcurrentDictionary<string, DateTime> TopicMetadatasLastUpdateTime = new ConcurrentDictionary<string, DateTime>();
         //topic --> partitionid -->
-        private ConcurrentDictionary<string, Dictionary<int, Tuple<Broker, BrokerConfiguration>>> TopicMetadataPartitionsLeaders = new ConcurrentDictionary<string, Dictionary<int, Tuple<Broker, BrokerConfiguration>>>();
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, long>> TopicOffsetEarliest = new ConcurrentDictionary<string, ConcurrentDictionary<int, long>>();
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, long>> TopicOffsetLatest = new ConcurrentDictionary<string, ConcurrentDictionary<int, long>>();
-        private object topicProducerLock = new object();
+        private readonly ConcurrentDictionary<string, Dictionary<int, Tuple<Broker, BrokerConfiguration>>> TopicMetadataPartitionsLeaders = new ConcurrentDictionary<string, Dictionary<int, Tuple<Broker, BrokerConfiguration>>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, long>> TopicOffsetEarliest = new ConcurrentDictionary<string, ConcurrentDictionary<int, long>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, long>> TopicOffsetLatest = new ConcurrentDictionary<string, ConcurrentDictionary<int, long>>();
+        private readonly object topicProducerLock = new object();
         //topic --> partitionid -->
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, Producer<TKey, TData>>> TopicPartitionsLeaderProducers = new ConcurrentDictionary<string, ConcurrentDictionary<int, Producer<TKey, TData>>>();
-        private ConcurrentDictionary<string, Producer<TKey, TData>> TopicProducersWithPartitionerClass = new ConcurrentDictionary<string, Producer<TKey, TData>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, Producer<TKey, TData>>> TopicPartitionsLeaderProducers = new ConcurrentDictionary<string, ConcurrentDictionary<int, Producer<TKey, TData>>>();
+        private readonly ConcurrentDictionary<string, Producer<TKey, TData>> TopicProducersWithPartitionerClass = new ConcurrentDictionary<string, Producer<TKey, TData>>();
         //topic --> partitionid -->
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, Consumer>> TopicPartitionsLeaderConsumers = new ConcurrentDictionary<string, ConcurrentDictionary<int, Consumer>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<int, Consumer>> TopicPartitionsLeaderConsumers = new ConcurrentDictionary<string, ConcurrentDictionary<int, Consumer>>();
 
         #region SyncProducerPool for metadata.
         private volatile bool disposed = false;
         // the pool of syncProducer for TopicMetaData requests, which retrieve PartitionMetaData, including leaders and ISRs.
         private volatile SyncProducerPool syncProducerPoolForMetaData = null;
-        private object syncProducerPoolForMetadataLock = new object();
-        private Random random = new Random();
-        private Random randomForGetCachedProducer = new Random();
+        private readonly object syncProducerPoolForMetadataLock = new object();
+        private readonly Random random = new Random();
+        private readonly Random randomForGetCachedProducer = new Random();
         #endregion
 
         public KafkaSimpleManager(KafkaSimpleManagerConfiguration config)

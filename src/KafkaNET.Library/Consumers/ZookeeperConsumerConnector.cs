@@ -54,11 +54,11 @@ namespace Kafka.Client.Consumers
         private readonly KafkaScheduler scheduler = new KafkaScheduler();
         private readonly IDictionary<string, IDictionary<int, PartitionTopicInfo>> topicRegistry = new ConcurrentDictionary<string, IDictionary<int, PartitionTopicInfo>>();
         private readonly IDictionary<Tuple<string, string>, BlockingCollection<FetchedDataChunk>> queues = new Dictionary<Tuple<string, string>, BlockingCollection<FetchedDataChunk>>();
-        private List<Action> stopAsyncRebalancing = new List<Action>();
+        private readonly List<Action> stopAsyncRebalancing = new List<Action>();
         private volatile bool disposed;
-        private EventHandler consumerRebalanceHandler;
-        private EventHandler zkSessionDisconnectedHandler;
-        private EventHandler zkSessionExpiredHandler;
+        private readonly EventHandler consumerRebalanceHandler;
+        private readonly EventHandler zkSessionDisconnectedHandler;
+        private readonly EventHandler zkSessionExpiredHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ZookeeperConsumerConnector"/> class.
@@ -78,7 +78,7 @@ namespace Kafka.Client.Consumers
         {
             if (string.IsNullOrEmpty(config.GroupId))
             {
-                throw new ArgumentNullException("GroupId of ConsumerConfiguration should not be empty.");
+                throw new ArgumentException("GroupId of ConsumerConfiguration should not be empty.", nameof(config));
             }
             Logger.Info("Enter ZookeeperConsumerConnector ...");
             try
@@ -555,7 +555,7 @@ namespace Kafka.Client.Consumers
 
             if (topicCountDict == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(topicCountDict));
             }
 
             var dirs = new ZKGroupDirs(this.config.GroupId);

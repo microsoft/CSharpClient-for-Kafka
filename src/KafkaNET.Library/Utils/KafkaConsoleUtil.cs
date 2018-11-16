@@ -71,8 +71,7 @@ namespace Kafka.Client.Utils
                     sw.Flush();
                     fs.Write(v.Message.Payload, 0, v.Message.Payload.Length);
                     fs.Flush();
-                    sw.WriteLine("\r\n==Binary END==",
-                        offsetBase + i, payload.Count, v.Message.Payload.Length);
+                    sw.WriteLine("\r\n==Binary END==");
                     i++;
                     totalCountOriginal++;
                     if (totalCountOriginal >= count && count > 0)

@@ -952,7 +952,7 @@ namespace Kafka.Client.ZooKeeperIntegration
         {
             if (path == null)
             {
-                throw new ArgumentNullException("Path must not be null");
+                throw new ArgumentNullException(nameof(path), "Path must not be null");
             }
 
             byte[] bytes = data == null ? null : this.serializer.Serialize(data);

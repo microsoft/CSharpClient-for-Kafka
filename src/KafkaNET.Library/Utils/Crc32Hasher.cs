@@ -29,8 +29,8 @@ namespace Kafka.Client.Utils
         internal const UInt32 DefaultSeed = 0xffffffff;
 
         private UInt32 hash;
-        private UInt32 seed;
-        private UInt32[] table;
+        private readonly UInt32 seed;
+        private readonly UInt32[] table;
         private static UInt32[] defaultTable;
 
         public Crc32Hasher()
