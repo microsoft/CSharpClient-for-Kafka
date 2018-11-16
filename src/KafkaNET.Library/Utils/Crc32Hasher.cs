@@ -77,7 +77,7 @@ namespace Kafka.Client.Utils
             return hash;
         }
 
-        internal static uint ComputeCrcUint32(byte[] bytes, int offset, int count)
+        public static uint ComputeCrcUint32(byte[] bytes, int offset, int count)
         {
             var hasher = new Crc32Hasher();
             return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, bytes, offset, count);

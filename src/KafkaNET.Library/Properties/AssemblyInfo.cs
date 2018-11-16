@@ -44,8 +44,11 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 [assembly: AssemblyVersion("1.0.0.0")] 
-[assembly: AssemblyFileVersion("1.0.0.0")] 
+[assembly: AssemblyFileVersion("1.0.0.0")]
 
-
-[assembly: InternalsVisibleTo("Kafka.Client.Tests")]
-// [assembly: CLSCompliant(true)]
+[assembly: InternalsVisibleTo("Kafka.Client.Tests,PublicKey=" +
+"0024000004800000940000000602000000240000525341310004000001000100d78f26db782675" +
+"d869d8d069aa2bd226a42af16b5bed2a8aea23feefe75053a815fbe10469f6c65e4a760dd329fc" +
+"7e806c69bfbd8a2c134f6938311421ab24dfac111da9fe9c89772220d5b88cf88093b7ecc09e4e" +
+"db75cb1ac3515e3a8e56bc1bf3eafedd2796b4cac4d942c0260f68f52a55a109e5470cf68f604e" +
+"7a5d2799")]
